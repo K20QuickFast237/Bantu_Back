@@ -14,11 +14,11 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function register(CreateUserRequest $request): JsonResponse{
-        return response()->json(['message'=>'ok']);
+    public function register(CreateUserRequest $request): JsonResponse
+    {
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
-
+        
         User::query()->create($data);
 
         return response()->json([
@@ -26,10 +26,14 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function login(LoginRequest $request): JsonResponse{
+    public function login(LoginRequest $request): JsonResponse
+    {
         $data = $request->validated();
         if (Auth::attempt(['email' => $data['email'], 'password' => $data['password']])) {
             $user = Auth::user();
+            User::query()->where('id', $user->id)->update([
+                'last_login' => now()
+            ]);
             $token = $user->createToken('authToken')->accessToken;
 
             return response()->json([
@@ -42,12 +46,14 @@ class AuthController extends Controller
         ], 401);
     }
 
-    public function user(): UserResource {
+    public function user(): UserResource
+    {
         $user = Auth::user();
         return new UserResource($user);
     }
 
-    public function logout(Request $request): JsonResponse{
+    public function logout(Request $request): JsonResponse
+    {
         $request->user()->token()->revoke();
         return response()->json([
             'message' => 'Logged out successfully.'
