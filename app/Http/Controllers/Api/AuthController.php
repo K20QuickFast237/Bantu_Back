@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Events\Registered;
 
 class AuthController extends Controller
 {
@@ -19,10 +20,11 @@ class AuthController extends Controller
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
         
-        User::query()->create($data);
+        $user = User::query()->create($data);
+        event(new Registered($user));
 
         return response()->json([
-            'message' => 'User registered successfully'
+            'message' => 'User successfully registered, Check your mail to verify your account.'
         ], 201);
     }
 
