@@ -5,10 +5,10 @@ echo "Deployment started ..."
 
 # Enter maintenance mode or return true
 # if already is in maintenance mode
-(sudo php artisan down) || true
+(php artisan down) || true
 
 # Pull the latest version of the app
-sudo git pull
+git pull
 
 # Install composer dependencies
 # composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
@@ -27,6 +27,6 @@ composer install --no-interaction
 php artisan migrate --force
 
 # Exit maintenance mode
-sudo php artisan up
+php artisan up
 
 echo "Deployment finished!"
