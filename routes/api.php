@@ -17,26 +17,7 @@ Route::get('/email/verify', function () {
 })->name('verification.notice');
 
 // Route to verify the email (email verification handler)
-Route::get('/email/verify/{id}/{hash}', function ($id, $hash, Request $request) {
-    // Find user by ID
-    $user = User::find($id);
-
-    if (!$user) {
-        return response()->json(['message' => 'User not found.'], 404);
-    }
-
-    // Verify if the hash is correct
-    if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
-        return response()->json(['message' => 'Invalid verification link.'], 403);
-    }
-
-    // Mark email as verified
-    if (!$user->hasVerifiedEmail()) {
-        $user->markEmailAsVerified();
-    }
-
-    return response()->json(['message' => 'Email verified successfully!']);
-})->middleware('signed')->name('verification.verify');
+Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])->middleware('signed')->name('verification.verify');
 
 // Route to resend the verification email
 Route::post('/email/verification-notification', function (Request $request) {
@@ -56,6 +37,12 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
+Route::post('forgot-password', [AuthController::class, 'ResetPasswordNotif'])->middleware('guest')->name('password.email');;
+Route::get('/reset-password/{token}', function (string $token) {
+    // return response()->json(['token' => $token]);
+    return view('auth.reset-password', ['token' => $token]);
+})->middleware('guest')->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'ResetPassword'])->middleware('guest')->name('password.update');
 
 Route::middleware('auth:api')->group(function () {
     Route::get('user', [AuthController::class, 'user']);
