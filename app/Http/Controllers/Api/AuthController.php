@@ -8,6 +8,7 @@ use App\Http\Requests\Api\CreateUserRequest;
 use App\Http\Requests\Api\LoginRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,9 +23,24 @@ class AuthController extends Controller
     public function register(CreateUserRequest $request): JsonResponse
     {
         $data = $request->validated();
+
         $data['password'] = Hash::make($data['password']);
-        
+
+        // Récupérer le rôle via role_id envoyé dans $data
+        $role = Role::findOrFail($data['role_id']);
+
+        // Remplacer la valeur active_role (ex: id) par le nom du rôle
+        $data['active_role'] = $role->name;
+
+        // Retirer role_id du tableau pour éviter d'avoir un champ inconnu dans users
+        unset($data['role_id']);
+
+
         $user = User::query()->create($data);
+
+        // Associer le rôle dans la table pivot
+        $user->roles()->attach($role->id);
+
         event(new Registered($user));
 
         return response()->json([
@@ -93,7 +109,7 @@ class AuthController extends Controller
         ]);
 
         $status = Password::sendResetLink($request->only('email'));
- 
+
         // return $status === Password::ResetLinkSent
         //     ? back()->with(['status' => __($status)])
         //     : back()->withErrors(['email' => __($status)]);
@@ -101,7 +117,7 @@ class AuthController extends Controller
         return $status === Password::ResetLinkSent
             ? response()->json(['message' => __($status)])
             : response()->json(['email' => __($status)], 404);
-        
+
         // $user = User::where('email', $request->email)->first();
         // if ($user) {
         //     $user->sendPasswordResetNotification($token);
@@ -117,7 +133,7 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required|min:8',
         ]);
-    
+
         $status = Password::reset($request->only('email', 'password', 'token'), function (User $user, string $password) {
             $user->forceFill([
                 'password' => Hash::make($password)

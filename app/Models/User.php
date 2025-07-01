@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\Contracts\OAuthenticatable;
 use Laravel\Passport\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassword, OAuthenticatable
 {
@@ -26,7 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassw
         'prenom',
         'email',
         'password',
-        'role',
+        'active_role',
         'is_active',
         'last_login',
     ];
@@ -52,5 +53,22 @@ class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassw
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+     /**
+     * Les rôles liés à cet utilisateur (relation many-to-many).
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'role_user');
+    }
+
+    /**
+     * Récupère le rôle actif (objet Role) selon le nom stocké dans active_role.
+     */
+    public function activeRole()
+    {
+        // $this->active_role contient le nom du rôle (string)
+        return $this->roles()->where('roles.name', $this->active_role)->first();
     }
 }

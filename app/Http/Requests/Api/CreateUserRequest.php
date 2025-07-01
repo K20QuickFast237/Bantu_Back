@@ -13,7 +13,7 @@ class CreateUserRequest extends FormRequest
     {
         return true;
     }
-    
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -25,6 +25,7 @@ class CreateUserRequest extends FormRequest
             'nom' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:users', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'max:255', 'confirmed'],
+            'role_id' => ['required', 'exists:roles,id'],
         ];
     }
 }
