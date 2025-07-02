@@ -53,4 +53,24 @@ class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassw
             'password' => 'hashed',
         ];
     }
+
+    public function particulier()
+    {
+        return $this->hasOne(Particulier::class);
+    }
+
+    public function professionnel()
+    {
+        return $this->hasOne(Professionnel::class);
+    }
+
+    public function formations()
+    {
+        return $this->hasMany(Formation::class);
+    }
+
+    public function experiences()
+    {
+        return $this->hasMany(Experience::class);
+    }
 }
