@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ParticulierProfileController;
+use App\Http\Controllers\Api\ProfessionnelProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -60,5 +61,9 @@ Route::middleware('auth:api')->group(function () {
 
     Route::middleware('auth:api')->group(function () {
         Route::post('/profile/particulier', [ParticulierProfileController::class, 'store']);
+    });
+
+    Route::middleware('auth:api')->group(function () {
+        Route::post('/profile/professionnel', [ProfessionnelProfileController::class, 'store']);
     });
 });
