@@ -68,4 +68,9 @@ class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassw
     {
         return $this->hasMany(Formation::class);
     }
+
+    public function experiences()
+    {
+        return $this->hasMany(Experience::class);
+    }
 }

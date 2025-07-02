@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ParticulierProfileController;
 use App\Http\Controllers\Api\ProfessionnelProfileController;
+use App\Http\Controllers\Profil\FormationController;
+use App\Http\Controllers\Profil\ExperienceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -66,4 +68,12 @@ Route::middleware('auth:api')->group(function () {
     Route::middleware('auth:api')->group(function () {
         Route::post('/profile/professionnel', [ProfessionnelProfileController::class, 'store']);
     });
+
+    Route::middleware('auth:api')->group(function () {
+        // Formations
+        Route::apiResource('formations', FormationController::class)->only(['index', 'store', 'update', 'destroy']);
+
+        // Expériences
+        Route::apiResource('experiences', ExperienceController::class)->only(['index', 'store', 'update', 'destroy']);
+});
 });

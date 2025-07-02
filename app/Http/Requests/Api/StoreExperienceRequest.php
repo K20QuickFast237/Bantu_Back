@@ -4,7 +4,7 @@ namespace App\Http\Requests\Api;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreFormationRequest extends FormRequest
+class StoreExperienceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,14 @@ class StoreFormationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'domaine_etude' => 'required|string|max:255',
+            'titre_poste' => 'required|string|max:255',
+            'nom_entreprise' => 'required|string|max:255',
             'date_debut' => 'required|date',
             'date_fin' => 'nullable|date|after_or_equal:date_debut',
-            'etablissement' => 'required|string|max:255',
-            'diplome' => 'required|string|max:255',
+            'description_taches' => 'nullable|string',
+            'adresse' => 'nullable|string|max:255',
+            'ville' => 'nullable|string|max:255',
+            'pays' => 'nullable|string|max:255',
         ];
     }
 }
