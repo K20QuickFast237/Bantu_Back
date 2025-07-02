@@ -53,4 +53,9 @@ class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassw
             'password' => 'hashed',
         ];
     }
+
+    public function particulier()
+    {
+        return $this->hasOne(Particulier::class);
+    }
 }

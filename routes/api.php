@@ -2,10 +2,12 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\ParticulierProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Models\User;
+
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -54,5 +56,9 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{id}/show', [ProductController::class, 'show']);
         Route::patch('{id}/update', [ProductController::class, 'update']);
         Route::delete('{id}/delete', [ProductController::class, 'delete']);
+    });
+
+    Route::middleware('auth:api')->group(function () {
+        Route::post('/profile/particulier', [ParticulierProfileController::class, 'store']);
     });
 });
