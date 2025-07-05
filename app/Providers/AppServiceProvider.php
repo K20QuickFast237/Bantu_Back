@@ -39,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Personnalisation du lien de réinitialisation du mot de passe envoyé par mail.
         ResetPassword::createUrlUsing(function (User $user, string $token) {
-            return env('FRONT_URL').'/reset-password?token='.$token;
+            return env('FRONT_URL').'/reset-password?token='.$token.'&email='.$user->email;
         });
     }
 }
