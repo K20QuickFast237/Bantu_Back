@@ -45,6 +45,7 @@ class AuthController extends Controller
             return response()->json([
                 'token' => $token
             ], 200);
+            // return redirect('/dashboard');
         }
 
         return response()->json([

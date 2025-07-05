@@ -1,6 +1,6 @@
 # Bantu_Back
 
-Repository code front du projet Bantu.
+Repository code back du projet Bantu.
 
 **Initialisé avec Laravel.**
 
