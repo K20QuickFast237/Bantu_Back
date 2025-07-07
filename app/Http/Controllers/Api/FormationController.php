@@ -4,12 +4,16 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreFormationRequest;
+use App\Http\Requests\Api\StoreFormationRequest;
 use App\Models\Formation;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class FormationController extends Controller
 {
+
+    use AuthorizesRequests;
+
     public function index()
     {
         return response()->json(Formation::where('user_id', auth()->id())->get());

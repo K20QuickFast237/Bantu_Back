@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreExperienceRequest;
+use App\Http\Requests\Api\StoreExperienceRequest;
 use App\Models\Experience;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ExperienceController extends Controller
 {
+
+    use AuthorizesRequests;
 
     public function index()
     {

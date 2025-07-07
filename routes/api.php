@@ -4,8 +4,8 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ParticulierProfileController;
 use App\Http\Controllers\Api\ProfessionnelProfileController;
-use App\Http\Controllers\Profil\FormationController;
-use App\Http\Controllers\Profil\ExperienceController;
+use App\Http\Controllers\Api\FormationController;
+use App\Http\Controllers\Api\ExperienceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -75,5 +75,5 @@ Route::middleware('auth:api')->group(function () {
 
         // Expériences
         Route::apiResource('experiences', ExperienceController::class)->only(['index', 'store', 'update', 'destroy']);
-});
+    });
 });

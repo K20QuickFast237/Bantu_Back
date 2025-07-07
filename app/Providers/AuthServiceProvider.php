@@ -2,11 +2,14 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
+// use Illuminate\Support\ServiceProvider;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 use App\Models\Formation;
 use App\Models\Experience;
 use App\Policies\FormationPolicy;
 use App\Policies\ExperiencePolicy;
+use Laravel\Passport\Passport;
 
 
 class AuthServiceProvider extends ServiceProvider
