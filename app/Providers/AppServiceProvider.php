@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
 
@@ -24,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
+        Schema::defaultStringLength(200);
         // Passport::ignoreRoutes();
         // Passport::routes();
         // Passport::tokensExpireIn(now()->addDays(15));
