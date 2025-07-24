@@ -12,14 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->after('name', function (Blueprint $table){
+            $table->after('name', function (Blueprint $table) {
                 $table->string('prenom')->nullable();
             });
-            
-            $table->after('remember_token', function (Blueprint $table){
-                $table->enum('role', ['Admin', 'Professionnel', 'Particulier'])->default('Particulier');
+
+            $table->after('remember_token', function (Blueprint $table) {
+                $table->string('photo_profil')->nullable();
+                $table->string('role_actif')->default('Particulier')->nullable();
                 $table->boolean('is_active')->default(true);
                 $table->dateTime('last_login')->nullable();
+                $table->foreign('role_actif')->references('name')->on('roles')->onDelete('cascade');
             });
         });
 

@@ -204,7 +204,6 @@ class AuthController extends Controller
                 'password' => $userData['sub'],
                 'photo_profil' => $userData['picture'],
             ]);
-            dd($user);
             $user = User::where('email', $user['email'])->first();  //->where('linkedin_id', $user['linkedin_id'])
         }
         return $user;
