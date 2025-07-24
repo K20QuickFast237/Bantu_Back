@@ -25,6 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassw
         'nom',
         'prenom',
         'email',
+        'photo_profil',
         'password',
         'role',
         'is_active',

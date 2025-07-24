@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
@@ -37,20 +38,23 @@ class AuthController extends Controller
         $data = $request->validated();
         if (Auth::attempt(['email' => $data['email'], 'password' => $data['password']])) {
             $user = Auth::user();
-            User::query()->where('id', $user->id)->update([
-                'last_login' => now()
-            ]);
-            $token = $user->createToken('authToken')->accessToken;
-
-            return response()->json([
-                'token' => $token
-            ], 200);
-            // return redirect('/dashboard');
+            return $this->LogUserIn($user);
         }
 
         return response()->json([
             'message' => 'The provided credentials are incorrect.'
         ], 401);
+    }
+
+    Private function LogUserIn(User $user) {
+        User::query()->where('id', $user->id)->update([
+            'last_login' => now()
+        ]);
+        $token = $user->createToken('authToken')->accessToken;
+
+        return response()->json([
+            'token' => $token
+        ], 200);
     }
 
     public function user(): UserResource
@@ -133,5 +137,76 @@ class AuthController extends Controller
         return $status === Password::PasswordReset
             ? response()->json(['message' => __($status)])
             : response()->json(['email' => __($status)], 404);
+    }
+
+    public function linkedinLogin()
+    {
+        $clientId = env('LINKEDIN_CLIENT_ID');
+        $redirectUri = env('LINKEDIN_REDIRECT');
+        $scope = 'openid%20profile%20email';
+        $response_type = 'code';
+
+        // $state = bin2hex(random_bytes(16));
+        // session(['linkedin_state' => $state]); //optional
+        // if you are creating state then you also need to pass in url
+
+
+        return redirect("https://www.linkedin.com/oauth/v2/authorization?response_type=$response_type&client_id=$clientId&redirect_uri=$redirectUri&scope=$scope");
+    }
+
+    public function handlelinkedinCallback(Request $request)
+    {
+        // $state = $request->query('state');
+        //  Verify the state parameter to prevent CSRF attacks
+        // if (!$state || $state !== $request->session()->pull('linkedin_state')) {
+        //     return response()->json(['error' => 'Invalid state'], 400);
+        // }
+
+        $code = $request->query('code');
+        if (empty($code)) {
+            return response()->json(['error' => 'Authorization code not provided'], 400);
+        }
+
+        $clientId = env('LINKEDIN_CLIENT_ID'); //config('services.linkedin.client_id');
+        $clientSecret = env('LINKEDIN_CLIENT_SECRET'); //config('services.linkedin.client_secret');
+        $redirectUri = env('LINKEDIN_REDIRECT'); //config('services.linkedin.redirect_uri');
+        
+        $response = Http::asForm()->post('https://www.linkedin.com/oauth/v2/accessToken', [
+            'code'          => $code,
+            'client_id'     => $clientId,
+            'client_secret' => $clientSecret,
+            'redirect_uri'  => $redirectUri,
+            'grant_type'    => 'authorization_code',
+        ]);
+        $accessToken = $response->json('access_token');
+        $userData = $this->getUserData($accessToken);
+        $user = $this->findOrCreateUser($userData);
+        Auth::login($user);
+
+        return $this->LogUserIn($user);
+    }
+
+    private function getUserData($accessToken){
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $accessToken,
+        ])->get('https://api.linkedin.com/v2/userinfo');
+        return $response->json();
+    }
+
+    private function findOrCreateUser(array $userData){
+        $user = User::where('email', $userData['email'])->first();
+        if (!$user) {
+            // Create a new user if not exists in database
+            $user = User::create([
+                'nom' => $userData['family_name'],
+                'prenom' => $userData['given_name'],
+                'email' => $userData['email'],
+                'password' => $userData['sub'],
+                'photo_profil' => $userData['picture'],
+            ]);
+            dd($user);
+            $user = User::where('email', $user['email'])->first();  //->where('linkedin_id', $user['linkedin_id'])
+        }
+        return $user;
     }
 }

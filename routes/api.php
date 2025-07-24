@@ -39,7 +39,7 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
-Route::post('forgot-password', [AuthController::class, 'ResetPasswordNotif'])->middleware('guest')->name('password.email');;
+Route::post('forgot-password', [AuthController::class, 'ResetPasswordNotif'])->middleware('guest')->name('password.email');
 Route::get('/reset-password/{token}', function (string $token) {
     // return response()->json(['token' => $token]);
     return view('auth.reset-password', ['token' => $token]);
@@ -80,10 +80,10 @@ Route::get('/google-login-callback', function (Request $request) {
 
     // return redirect('/dashboard');
 });
-Route::post('/linkedin-login-callback', function (Request $request) {
-    file_put_contents('test.txt', json_encode($request->all()));
-    return response()->json($request->all(), 200);
-});
+//Login with LinkedIn
+Route::get('/linkedin-login', [AuthController::class, 'linkedinLogin'])->middleware('guest');
+Route::get('/linkedin-login-callback', [AuthController::class, 'handlelinkedinCallback']);
+
 
 Route::middleware('auth:api')->group(function () {
     Route::get('user', [AuthController::class, 'user']);
