@@ -45,50 +45,18 @@ Route::post('/email/verification-notification', function (Request $request) {
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 Route::post('forgot-password', [AuthController::class, 'ResetPasswordNotif'])->middleware('guest')->name('password.email');
-Route::get('/reset-password/{token}', function (string $token) {
-    // return response()->json(['token' => $token]);
-    return view('auth.reset-password', ['token' => $token]);
-})->middleware('guest')->name('password.reset');
+// Route::get('/reset-password/{token}', function (string $token) {
+//     // return response()->json(['token' => $token]);
+//     return view('auth.reset-password', ['token' => $token]);
+// })->middleware('guest')->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'ResetPassword'])->middleware('guest')->name('password.update');
 
-//Login With Goolgle
-Route::get('/google-auth/redirect', function () {
-    return Socialite::driver('google')->stateless()->redirect();
-    // ->scopes([''])
-    // ->with(['hd' => 'example.com'])
-});
-Route::post('/google-login', function (Request $request) {
-    $client = new Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
-    $payload = $client->verifyIdToken($request->JWT_ID_Token);
-    return response()->json($payload, 200);
-});
-Route::get('/google-login-callback', function (Request $request) {
-    file_put_contents('test.txt', date('d-m-Y') . ': \n' . json_encode($request->all()));
-    return response()->json($request->all(), 200);
+// Login with Google
+Route::post('/google-login', [AuthController::class, 'googleLogin'])->middleware('guest');
 
-    $googleUser = Socialite::driver('google')->stateless()->user();
-
-    $googleUser = User::updateOrCreate([
-        'google_id' => $googleUser->id,
-    ], [
-        'name' => $googleUser->name,
-        'email' => $googleUser->email,
-        'github_token' => $googleUser->token,
-        'github_refresh_token' => $googleUser->refreshToken,
-    ]);
-
-    // Auth::login($googleUser);
-    $token = $googleUser->createToken('authToken')->accessToken;
-    return response()->json([
-        'token' => $token
-    ], 200);
-
-    // return redirect('/dashboard');
-});
-//Login with LinkedIn
+// Login with LinkedIn
 Route::get('/linkedin-login', [AuthController::class, 'linkedinLogin'])->middleware('guest');
 Route::get('/linkedin-login-callback', [AuthController::class, 'handlelinkedinCallback']);
-
 
 Route::middleware('auth:api')->group(function () {
     Route::get('user', [AuthController::class, 'user']);

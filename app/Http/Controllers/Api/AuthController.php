@@ -71,7 +71,8 @@ class AuthController extends Controller
         ], 200);
     }
 
-    public function emailVerify($id, $hash, Request $request) {
+    public function emailVerify($id, $hash, Request $request)
+    {
         // Find user by ID
         $user = User::find($id);
 
@@ -92,7 +93,8 @@ class AuthController extends Controller
         return response()->json(['message' => 'Email verified successfully!']);
     }
 
-    public function ResetPasswordNotif(Request $request) {
+    public function ResetPasswordNotif(Request $request)
+    {
         $request->validate([
             'email' => 'required|email',
         ]);
@@ -116,7 +118,8 @@ class AuthController extends Controller
         // }
     }
 
-    public function ResetPassword(Request $request) {
+    public function ResetPassword(Request $request)
+    {
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
@@ -137,6 +140,19 @@ class AuthController extends Controller
         return $status === Password::PasswordReset
             ? response()->json(['message' => __($status)])
             : response()->json(['email' => __($status)], 404);
+    }
+
+    public function googleLogin(Request $request) 
+    {
+        $client = new \Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
+        $userData = $client->verifyIdToken($request->JWT_ID_Token);
+
+        if (!$userData) {
+            return response()->json(['message' => 'Invalid or expired token.'], 401);
+        }
+
+        $user = $this->findOrCreateUser($userData);
+        return $this->LogUserIn($user);
     }
 
     public function linkedinLogin()
@@ -186,14 +202,16 @@ class AuthController extends Controller
         return $this->LogUserIn($user);
     }
 
-    private function getUserData($accessToken){
+    private function getUserData($accessToken)
+    {
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $accessToken,
         ])->get('https://api.linkedin.com/v2/userinfo');
         return $response->json();
     }
 
-    private function findOrCreateUser(array $userData){
+    private function findOrCreateUser(array $userData)
+    {
         $user = User::where('email', $userData['email'])->first();
         if (!$user) {
             // Create a new user if not exists in database
@@ -201,6 +219,7 @@ class AuthController extends Controller
                 'nom' => $userData['family_name'],
                 'prenom' => $userData['given_name'],
                 'email' => $userData['email'],
+                'email_verified_at' => $userData['email_verified'] ? now() : null,
                 'password' => $userData['sub'],
                 'photo_profil' => $userData['picture'],
             ]);

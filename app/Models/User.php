@@ -30,6 +30,7 @@ class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassw
         'role',
         'is_active',
         'last_login',
+        'email_verified_at',
     ];
 
     /**
