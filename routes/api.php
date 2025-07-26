@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ParticulierProfileController;
 use App\Http\Controllers\Api\ProfessionnelProfileController;
 use App\Http\Controllers\Api\FormationController;
 use App\Http\Controllers\Api\ExperienceController;
+use App\Http\Controllers\Api\SkillController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -84,5 +85,10 @@ Route::middleware('auth:api')->group(function () {
 
         // Expériences
         Route::apiResource('experiences', ExperienceController::class)->only(['index', 'store', 'update', 'destroy']);
+
+        //Skills
+        Route::apiResource('skills', SkillController::class);
+
+        
     });
 });
