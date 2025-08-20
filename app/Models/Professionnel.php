@@ -28,4 +28,14 @@ class Professionnel extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function offres()
+    {
+        return $this->hasMany(OffreEmploi::class, 'employeur_id');
+    }
+
+    public function invitations()
+    {
+        return $this->hasMany(Invitation::class, 'employeur_id');
+    }
 }

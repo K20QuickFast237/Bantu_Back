@@ -21,9 +21,9 @@ return new class extends Migration
             $table->string('pays');
             $table->string('titre_professionnel');
             $table->text('resume_profil');
-            $table->string('image_profil');
-            $table->string('cv_link');
-            $table->string('lettre_motivation_link');
+            $table->string('image_profil')->nullable();
+            $table->string('cv_link')->nullable();
+            $table->string('lettre_motivation_link')->nullable();
             $table->boolean('is_visible')->default(true);
             $table->timestamps();
         });

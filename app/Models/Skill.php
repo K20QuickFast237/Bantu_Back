@@ -16,4 +16,12 @@ class Skill extends Model
         'nbr_usage',
     ];
 
+    public function offres()
+    {
+        return $this->belongsToMany(OffreEmploi::class, 'offre_skill', 'skill_id', 'offre_id')
+                    ->using(OffreSkill::class)
+                    ->withPivot('ordre_aff')
+                    ->withTimestamps();
+    }
+
 }

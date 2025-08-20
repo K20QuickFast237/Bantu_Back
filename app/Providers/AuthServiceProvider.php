@@ -21,6 +21,8 @@ class AuthServiceProvider extends ServiceProvider
         Formation::class => FormationPolicy::class,
         Experience::class => ExperiencePolicy::class,
         Skill::class => SkillPolicy::class,
+        OffreEmploi::class => OffreEmploiPolicy::class,
+        Candidature::class => CandidaturePolicy::class,
     ];
 
     /**
@@ -37,5 +39,8 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerPolicies();
+
+        Gate::define('isCandidat', fn($user) => $user->isCandidat());
+        Gate::define('isRecruteur', fn($user) => $user->isRecruteur());
     }
 }

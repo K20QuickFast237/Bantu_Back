@@ -75,4 +75,21 @@ class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassw
     {
         return $this->hasMany(Experience::class);
     }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    // Vérifie si l'utilisateur est un candidat
+    public function isCandidat(): bool
+    {
+        return $this->particulier()->exists();
+    }
+
+    // Vérifie si l'utilisateur est un recruteur
+    public function isRecruteur(): bool
+    {
+        return $this->professionnel()->exists();
+    }
 }
