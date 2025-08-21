@@ -7,6 +7,9 @@ use App\Http\Controllers\Api\ProfessionnelProfileController;
 use App\Http\Controllers\Api\FormationController;
 use App\Http\Controllers\Api\ExperienceController;
 use App\Http\Controllers\Api\SkillController;
+use App\Http\Controllers\Api\OffreEmploiController;
+use App\Http\Controllers\Api\CandidatureController;
+use App\Http\Controllers\Api\InvitationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -89,6 +92,50 @@ Route::middleware('auth:api')->group(function () {
         //Skills
         Route::apiResource('skills', SkillController::class);
 
-        
+        // Route::apiResource('offres', OffreEmploiController::class)->parameters([
+        //     'offres' => 'offreEmploi'
+        // ]);
+        Route::apiResource('candidatures', CandidatureController::class);
+        Route::apiResource('invitations', InvitationController::class);
     });
+
+    // Routes publiques 
+    Route::get('/offres', [OffreEmploiController::class, 'index']);
+    Route::get('/offres/{offreEmploi}', [OffreEmploiController::class, 'show']);
+
+    // Routes protégées (recruteurs connectés)
+    Route::middleware('auth:api')->group(function () {
+        Route::get('/mesoffres', [OffreEmploiController::class, 'mesOffres']);
+        Route::post('/offres', [OffreEmploiController::class, 'store']); 
+        Route::put('/offres/{offreEmploi}', [OffreEmploiController::class, 'update']); 
+        Route::delete('/offres/{offreEmploi}', [OffreEmploiController::class, 'destroy']);
+    });
+
+    Route::middleware('auth:api')->group(function () {
+
+        // Candidat : créer une candidature
+        Route::post('candidatures', [CandidatureController::class, 'store'])
+            ->middleware('can:isCandidat');
+
+        // Candidat : voir toutes ses candidatures
+        Route::get('candidatures/me', [CandidatureController::class, 'myCandidatures'])
+            ->middleware('can:isCandidat');
+
+        // Candidat : mettre à jour CV ou motivation
+        Route::put('candidatures/{candidature}', [CandidatureController::class, 'update'])
+            ->middleware('can:isCandidat');
+
+        // Recruteur : voir toutes les candidatures pour ses offres
+        Route::get('candidatures', [CandidatureController::class, 'index'])
+            ->middleware('can:isRecruteur');
+
+        // Recruteur : mettre à jour le statut ou la note IA
+        Route::put('candidatures/{candidature}/status', [CandidatureController::class, 'updateStatus'])
+            ->middleware('can:isRecruteur');
+
+        // Recruteur : envoyer invitation entretien ou contrat
+        Route::post('candidatures/{candidature}/invite', [CandidatureController::class, 'sendInvitation'])
+            ->middleware('can:isRecruteur');
+    });
+    
 });

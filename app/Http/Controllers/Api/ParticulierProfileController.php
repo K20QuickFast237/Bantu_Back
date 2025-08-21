@@ -28,4 +28,6 @@ class ParticulierProfileController extends Controller
             'data' => $particulier,
         ], 201);
     }
+
+    
 }
