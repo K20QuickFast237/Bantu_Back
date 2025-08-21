@@ -33,13 +33,6 @@ class AppServiceProvider extends ServiceProvider
         // Passport::personalAccessTokensExpireIn(now()->addMonths(6));
 
         // Personnalisation du lien de réinitialisation du mot de passe envoyé par mail.
-        /*
-        ResetPassword::createUrlUsing(function (User $user, string $token) {
-            return 'https://example.com/reset-password?token='.$token;
-        });
-        //*/
-
-        // Personnalisation du lien de réinitialisation du mot de passe envoyé par mail.
         ResetPassword::createUrlUsing(function (User $user, string $token) {
             return env('FRONT_URL').'/reset-password?token='.$token.'&email='.$user->email;
         });
