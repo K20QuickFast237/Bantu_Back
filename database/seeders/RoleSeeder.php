@@ -10,12 +10,12 @@ class RoleSeeder extends Seeder
     public function run()
     {
         Role::updateOrCreate(
-            ['name' => 'candidat'],
-            ['description' => 'Utilisateur candidat']
+            ['name' => 'professionnel'],
+            ['description' => 'Utilisateur professionnel']
         );
 
         Role::updateOrCreate(
-            ['name' => 'recruteur'],
+            ['name' => 'particulier'],
             ['description' => 'Utilisateur recruteur']
         );
     }

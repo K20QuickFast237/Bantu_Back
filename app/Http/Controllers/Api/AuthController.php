@@ -149,4 +149,32 @@ class AuthController extends Controller
             ? response()->json(['message' => __($status)])
             : response()->json(['email' => __($status)], 404);
     }
+
+    public function switchRole(Request $request)
+    {
+        $request->validate([
+            'role_name' => 'required|string', // on attend le nom du rôle à activer
+        ]);
+
+        $user = $request->user(); // utilisateur authentifié
+
+        // Vérifier que l'utilisateur a ce rôle dans ses rôles liés
+        $role = $user->roles()->where('name', $request->role_name)->first();
+
+        if (!$role) {
+            return response()->json([
+                'message' => 'Le rôle spécifié n\'est pas associé à cet utilisateur.'
+            ], 403);
+        }
+
+        // Mettre à jour le rôle actif
+        $user->active_role = $role->name;
+        $user->save();
+
+        return response()->json([
+            'message' => 'Rôle actif changé avec succès.',
+            'active_role' => $user->active_role,
+        ]);
+    }
+
 }

@@ -22,7 +22,7 @@ Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])-
 // Route to resend the verification email
 Route::post('/email/verification-notification', function (Request $request) {
     $user = User::where('email', $request->email)->first();
-    
+
     if (!$user) {
         return response()->json(['message' => 'User not found.'], 404);
     }
@@ -47,6 +47,7 @@ Route::post('/reset-password', [AuthController::class, 'ResetPassword'])->middle
 Route::middleware('auth:api')->group(function () {
     Route::get('user', [AuthController::class, 'user']);
     Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('switch-role', [AuthController::class, 'switchRole']);
 
     Route::prefix('a_products')->group(function () {
         Route::get('/', [ProductController::class, 'index']);
