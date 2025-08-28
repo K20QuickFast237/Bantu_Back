@@ -102,7 +102,7 @@ class CandidatureController extends Controller
     }
 
     /**
-     * Recruteur : Mettre à jour statut ou note IA
+     * Recruteur : Mettre à jour statut 
      */
     public function updateStatus(UpdateCandidatureRecruteurRequest $request, Candidature $candidature): JsonResponse
     {
@@ -113,7 +113,6 @@ class CandidatureController extends Controller
 
             $candidature->update([
                 'statut' => $data['statut'] ?? $candidature->statut,
-                'note_ia' => $data['note_ia'] ?? $candidature->note_ia,
             ]);
 
             return $candidature->load(['particulier', 'offre.skills']);
