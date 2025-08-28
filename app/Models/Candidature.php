@@ -25,6 +25,10 @@ class Candidature extends Model
         'commentaire_employeur',
     ];
 
+    protected $casts = [
+        'cv_genere' => 'array',
+    ];
+
     // Le particulier (candidat)
     public function particulier(): BelongsTo
     {

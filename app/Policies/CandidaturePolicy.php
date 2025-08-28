@@ -33,30 +33,6 @@ class CandidaturePolicy
     }
 
     /**
-     * Vérifie si l'utilisateur peut mettre à jour sa candidature
-     */
-    public function update(User $user, Candidature $candidature)
-    {
-        return $user->id === $candidature->particulier_id;
-    }
-
-    /**
-     * Vérifie si le recruteur peut mettre à jour le statut
-     */
-    public function updateStatus(User $user, Candidature $candidature)
-    {
-        return $user->id === $candidature->offre->employeur_id;
-    }
-
-    /**
-     * Vérifie si le recruteur peut envoyer une invitation
-     */
-    public function sendInvitation(User $user, Candidature $candidature)
-    {
-        return $user->id === $candidature->offre->employeur_id;
-    }
-
-    /**
      * Determine whether the user can delete the model.
      */
     public function delete(User $user, Candidature $candidature): bool
@@ -78,5 +54,43 @@ class CandidaturePolicy
     public function forceDelete(User $user, Candidature $candidature): bool
     {
         return false;
+    }
+
+    /**
+     * Un particulier peut mettre à jour SA candidature
+     * uniquement si elle est encore en "en_revision".
+     */
+    public function update(User $user, Candidature $candidature): bool
+    {
+        // Vérifie que le user a bien un profil particulier
+        if (!$user->particulier) {
+            return false;
+        }
+
+        return $user->particulier->id === $candidature->particulier_id
+            && $candidature->statut === 'en_revision';
+    }
+
+    /**
+     * Un recruteur peut changer le statut
+     * uniquement si la candidature appartient à une de SES offres.
+     */
+    public function updateStatus(User $user, Candidature $candidature): bool
+    {
+        // Vérifie que le user a bien un profil pro
+        if (!$user->professionnel) {
+            return false;
+        }
+
+        return $user->professionnel->id === $candidature->offre->employeur_id;
+    }
+
+    /**
+     * Un recruteur peut envoyer une invitation
+     * uniquement si la candidature appartient à une de SES offres.
+     */
+    public function sendInvitation(User $user, Candidature $candidature): bool
+    {
+        return $user->id === $candidature->offre->employeur_id;
     }
 }
