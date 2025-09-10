@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\SkillController;
 use App\Http\Controllers\Api\OffreEmploiController;
 use App\Http\Controllers\Api\CandidatureController;
 use App\Http\Controllers\Api\InvitationController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -17,10 +18,17 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
-
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:api')->middleware('verified'); // Verified to ensure the user's email is verified
+Route::middleware('auth:api')->prefix('user')->group(function () {
+    Route::get('/user', function (Request $request) {
+            return $request->user();
+        })->middleware('verified'); // Verified to ensure the user's email is verified
+    Route::get('/{user}/skills', [UserController::class, 'getUserSkills']);
+    Route::get('/{user}/roles', [UserController::class, 'getUserRoles']);
+    Route::post('/{user}/skill', [UserController::class, 'setUserSkill']);
+    Route::post('/{user}/role', [UserController::class, 'setUserRole']);
+    Route::delete('/{user}/skill/{skill}', [UserController::class, 'deleteUserSkill']);
+    Route::delete('/{user}/role/{role}', [UserController::class, 'deleteUserRole']);
+});
 
 // Route to show the email verification notice
 Route::get('/email/verify', function () {

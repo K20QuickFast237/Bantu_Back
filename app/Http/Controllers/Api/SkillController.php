@@ -52,4 +52,10 @@ class SkillController extends Controller
         $skill->delete();
         return response()->json(null, 204);
     }
+
+    public function getSkillUsers(Skill $skill)
+    {
+        $users = $skill->users ?? ["message" => "Aucun utilisateur trouvé."]; // Récupère les utilisateurs associés à la compétence
+        return response()->json($users);
+    }
 }

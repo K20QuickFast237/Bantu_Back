@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Skill extends Model
 {
@@ -15,8 +16,11 @@ class Skill extends Model
         'icon',
         'nbr_usage',
     ];
-
-    public function offres()
+    
+    /**
+     * offres
+     */
+    public function offres(): BelongsToMany
     {
         return $this->belongsToMany(OffreEmploi::class, 'offre_skill', 'skill_id', 'offre_id')
                     ->using(OffreSkill::class)
@@ -24,4 +28,11 @@ class Skill extends Model
                     ->withTimestamps();
     }
 
+    /**
+     * users
+     */
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)->withPivot('niveau')->using(SkillUser::class);
+    }
 }

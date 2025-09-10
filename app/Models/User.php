@@ -6,6 +6,7 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\CanResetPassword as AuthCanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\Contracts\OAuthenticatable;
@@ -75,10 +76,21 @@ class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassw
     {
         return $this->hasMany(Experience::class);
     }
-
-    public function roles()
+        
+    /**
+     * skills
+     */
+    public function skills(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class);
+        return $this->belongsToMany(Skill::class, 'user_skill')->withPivot('niveau')->withTimestamps();
+    }
+
+    /**
+     * roles
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'user_roles')->withPivot('isCurrent');
     }
 
     // Vérifie si l'utilisateur est un candidat
