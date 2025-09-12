@@ -10,12 +10,20 @@ use App\Http\Controllers\Api\SkillController;
 use App\Http\Controllers\Api\OffreEmploiController;
 use App\Http\Controllers\Api\CandidatureController;
 use App\Http\Controllers\Api\InvitationController;
+use App\Http\Controllers\Api\MatchingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
+
+// Routes matching pour les listings de candidats et d'offres
+Route::get('matching/candidate/{candidateId}', [MatchingController::class, 'candidateMatches']);
+Route::get('matching/job/{offreId}', [MatchingController::class, 'jobMatches']);
+
+
+
 
 
 Route::get('/user', function (Request $request) {
@@ -139,3 +147,4 @@ Route::middleware('auth:api')->group(function () {
     });
     
 });
+
