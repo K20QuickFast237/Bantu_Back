@@ -103,7 +103,7 @@ Route::middleware('auth:api')->group(function () {
         // Route::apiResource('offres', OffreEmploiController::class)->parameters([
         //     'offres' => 'offreEmploi'
         // ]);
-        Route::apiResource('candidatures', CandidatureController::class);
+        // Route::apiResource('candidatures', CandidatureController::class);
         Route::apiResource('invitations', InvitationController::class);
     });
 

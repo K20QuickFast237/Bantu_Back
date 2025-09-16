@@ -23,17 +23,31 @@ class StoreCandidatureRequest extends FormRequest
     {
         return [
             'offre_id' => 'required|exists:offre_emplois,id',
-            // Uploads ou contenu texte
-            'cv_url' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+
+            // Mode Upload
+            'cv_url'         => 'required_without:cv_genere|file|mimes:pdf,doc,docx|max:2048',
             'motivation_url' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+
+            // Mode Profil
+            // Ici, au lieu de boolean, cv_genere stockera un snapshot JSON → donc string
+            'cv_genere'      => 'required_without:cv_url|json',
+
+            // Facultatif : motivation en texte libre
             'motivation_text' => 'nullable|string',
-            'cv_genere' => 'nullable|boolean',
 
-            // Ce champ ne devrait pas être rempli par le candidat
-            'note_ia' => 'prohibited',
+            // Champs réservés au recruteur
+            'note_ia'              => 'prohibited',
+            'commentaire_employeur'=> 'prohibited',
+        ];
 
-            // Optionnel : commentaire de l'employeur, rempli plus tard
-            'commentaire_employeur' => 'prohibited',
+    }
+
+    public function messages(): array
+    {
+        return [
+            'cv_url.required_without' => 'Vous devez fournir un CV (upload) ou postuler via votre profil.',
+            'cv_genere.required_without' => 'Vous devez fournir un CV (upload) ou postuler via votre profil.',
+            'cv_genere.json' => 'Le champ cv_genere doit contenir un JSON valide (snapshot du profil).',
         ];
     }
 }

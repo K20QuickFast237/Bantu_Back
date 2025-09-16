@@ -11,6 +11,8 @@ use App\Models\Skill;
 use App\Policies\FormationPolicy;
 use App\Policies\ExperiencePolicy;
 use App\Policies\SkillPolicy;
+use App\Policies\OffreEmploiPolicy;
+use App\Policies\CandidaturePolicy;
 use Laravel\Passport\Passport;
 
 

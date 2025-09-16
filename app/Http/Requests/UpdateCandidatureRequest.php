@@ -22,17 +22,29 @@ class UpdateCandidatureRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'statut' => 'sometimes|in:en_revision,preselectionne,invitation_entretien,rejete,embauche',
+            // Recruteur : peut modifier statut/note/commentaire via un autre endpoint
+            'statut' => 'prohibited',
+            'note_ia' => 'prohibited',
+            'commentaire_employeur' => 'prohibited',
 
-            // Recruteur : peut mettre note IA et commentaire
-            'note_ia' => 'nullable|numeric|min:0|max:100',
-            'commentaire_employeur' => 'nullable|string',
-
-            // Candidat : peut mettre à jour ses fichiers ou textes
-            'cv_url' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            // Candidat : peut modifier son mode de candidature
+            'cv_url'         => 'nullable|file|mimes:pdf,doc,docx|max:2048',
             'motivation_url' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
-            'motivation_text' => 'nullable|string',
-            'cv_genere' => 'nullable|boolean',
+            'motivation_text'=> 'nullable|string',
+
+            // Snapshot du profil
+            'cv_genere'      => 'nullable|json',
+        ];
+        
+    }
+
+    public function messages(): array
+    {
+        return [
+                'statut.prohibited' => 'Le statut ne peut pas être modifié par un candidat.',
+                'note_ia.prohibited' => 'La note IA ne peut pas être modifiée par un candidat.',
+                'commentaire_employeur.prohibited' => 'Le commentaire ne peut pas être modifié par un candidat.',
+                'cv_genere.json' => 'Le champ cv_genere doit contenir un JSON valide.',
         ];
     }
 }
