@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\OffreEmploiController;
 use App\Http\Controllers\Api\CandidatureController;
 use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\MatchingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -29,6 +30,17 @@ Route::middleware('auth:api')->prefix('user')->group(function () {
     Route::delete('/{user}/skill/{skill}', [UserController::class, 'deleteUserSkill']);
     Route::delete('/{user}/role/{role}', [UserController::class, 'deleteUserRole']);
 });
+// Routes matching pour les listings de candidats et d'offres
+Route::get('matching/candidate/{candidateId}', [MatchingController::class, 'candidateMatches']);
+Route::get('matching/job/{offreId}', [MatchingController::class, 'jobMatches']);
+
+
+
+
+
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:api')->middleware('verified'); // Verified to ensure the user's email is verified
 
 // Route to show the email verification notice
 Route::get('/email/verify', function () {
@@ -147,3 +159,4 @@ Route::middleware('auth:api')->group(function () {
     });
     
 });
+
