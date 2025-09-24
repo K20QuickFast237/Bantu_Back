@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\CandidatureController;
 use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\MatchingController;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -20,8 +21,8 @@ use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
 Route::middleware('auth:api')->prefix('user')->group(function () {
-    Route::get('/user', function (Request $request) {
-            return $request->user();
+    Route::get('/{user}', function (User $user) {
+            return response()->json(new UserResource($user));
         })->middleware('verified'); // Verified to ensure the user's email is verified
     Route::get('/{user}/skills', [UserController::class, 'getUserSkills']);
     Route::get('/{user}/roles', [UserController::class, 'getUserRoles']);
@@ -48,7 +49,7 @@ Route::get('/email/verify', function () {
 })->name('verification.notice');
 
 // Route to verify the email (email verification handler)
-Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])->middleware('signed')->name('verification.verify');
+Route::post('/email/verify/{id}/{hash}', [AuthController::class, 'emailVerify'])->middleware('signed')->name('verification.verify');
 
 // Route to resend the verification email
 Route::post('/email/verification-notification', function (Request $request) {

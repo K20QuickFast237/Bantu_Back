@@ -53,8 +53,8 @@ class AuthController extends Controller
         $token = $user->createToken('authToken')->accessToken;
 
         return response()->json([
-            'token' => $token,
-            'user' => new UserResource($user)
+            'user' => new UserResource($user),
+            'token' => $token
         ], 200);
     }
 
@@ -74,6 +74,22 @@ class AuthController extends Controller
 
     public function emailVerify($id, $hash, Request $request)
     {
+        try {
+            // Validate the request
+            $code = $request->validate([
+                'code' => 'required|string|size:6',
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'Invalid verification code.',
+                'error' => $th->getMessage()
+            ], 403);
+        }
+
+        if (! $code == substr($hash, - 11, 6)){
+            return response()->json(['message' => 'Invalid verification code.'], 403);
+        }
+
         // Find user by ID
         $user = User::find($id);
 
@@ -89,6 +105,7 @@ class AuthController extends Controller
         // Mark email as verified
         if (!$user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
+            $user->update(['is_active' => 1]);
         }
 
         return response()->json(['message' => 'Email verified successfully!']);
