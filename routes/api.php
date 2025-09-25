@@ -39,7 +39,7 @@ Route::middleware('auth:api')->prefix('user')->group(function () {
 Route::get('matching/candidate/{candidateId}', [MatchingController::class, 'candidateMatches']);
 Route::get('matching/job/{offreId}', [MatchingController::class, 'jobMatches']);
 
-// Routes matching pour les conversations
+// Routes pour les conversations
 Route::prefix('conversations')->middleware('auth:api')->group(function () {
     Route::get('/', [\App\Http\Controllers\Api\ConversationController::class, 'index']);
     Route::post('/', [\App\Http\Controllers\Api\ConversationController::class, 'store']);
@@ -47,7 +47,7 @@ Route::prefix('conversations')->middleware('auth:api')->group(function () {
 });
 
 
-// Routes matching pour les conversations
+// Routes  pour les messages
 Route::prefix('messages')->middleware('auth:api')->group(function () {
     Route::post('/{conversationId}', [\App\Http\Controllers\Api\MessageController::class, 'store']);
     Route::put('/{message}', [\App\Http\Controllers\Api\MessageController::class, 'update']);
