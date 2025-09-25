@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ParticulierProfileController;
@@ -12,9 +13,10 @@ use App\Http\Controllers\Api\CandidatureController;
 use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\MatchingController;
+use App\Http\Controllers\Api\ConversationController;
+use App\Http\Controllers\Api\MessageController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -29,12 +31,26 @@ Route::middleware('auth:api')->prefix('user')->group(function () {
     Route::delete('/{user}/skill/{skill}', [UserController::class, 'deleteUserSkill']);
     Route::delete('/{user}/role/{role}', [UserController::class, 'deleteUserRole']);
 });
+
+
 // Routes matching pour les listings de candidats et d'offres
 Route::get('matching/candidate/{candidateId}', [MatchingController::class, 'candidateMatches']);
 Route::get('matching/job/{offreId}', [MatchingController::class, 'jobMatches']);
 
+// Routes pour les conversations
+Route::prefix('conversations')->middleware('auth:api')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\ConversationController::class, 'index']);
+    Route::post('/', [\App\Http\Controllers\Api\ConversationController::class, 'store']);
+    Route::get('/{id}', [\App\Http\Controllers\Api\ConversationController::class, 'show']);
+});
 
 
+// Routes  pour les messages
+Route::prefix('messages')->middleware('auth:api')->group(function () {
+    Route::post('/{conversationId}', [\App\Http\Controllers\Api\MessageController::class, 'store']);
+    Route::put('/{message}', [\App\Http\Controllers\Api\MessageController::class, 'update']);
+    Route::delete('/{message}', [\App\Http\Controllers\Api\MessageController::class, 'destroy']);
+});
 
 
 // Route::get('/user', function (Request $request) {
