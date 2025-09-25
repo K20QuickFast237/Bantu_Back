@@ -21,9 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
 Route::middleware('auth:api')->prefix('user')->group(function () {
-    Route::get('/{user}', function (User $user) {
-            return response()->json(new UserResource($user));
-        })->middleware('verified'); // Verified to ensure the user's email is verified
+    Route::get('/{user}', fn(User $user) => response()->json(new UserResource($user)))->middleware('verified'); // Verified to ensure the user's email is verified
     Route::get('/{user}/skills', [UserController::class, 'getUserSkills']);
     Route::get('/{user}/roles', [UserController::class, 'getUserRoles']);
     Route::post('/{user}/skill', [UserController::class, 'setUserSkill']);
@@ -39,9 +37,9 @@ Route::get('matching/job/{offreId}', [MatchingController::class, 'jobMatches']);
 
 
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:api')->middleware('verified'); // Verified to ensure the user's email is verified
+// Route::get('/user', function (Request $request) {
+//     return $request->user();
+// })->middleware('auth:api')->middleware('verified'); // Verified to ensure the user's email is verified
 
 // Route to show the email verification notice
 Route::get('/email/verify', function () {
