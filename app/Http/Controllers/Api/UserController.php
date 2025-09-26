@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\userRole;
-use App\Http\Resources\userSkill;
+use App\Http\Resources\UserSkillResource;
 use App\Models\Role;
 use App\Models\Skill;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -73,7 +73,7 @@ class UserController extends Controller
 
     public function getUserSkills(User $user): JsonResponse
     {
-        $skills = new userSkill($user->skills); // Récupère les compétences associées à l'utilisateur
+        $skills = UserSkillResource::collection($user->skills); // Récupère les compétences associées à l'utilisateur
         return response()->json(
             !$skills->isEmpty() ? $skills : ["message" => "Aucune compétence trouvée."]
         // return

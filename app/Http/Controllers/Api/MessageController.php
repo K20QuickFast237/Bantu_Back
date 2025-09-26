@@ -91,7 +91,7 @@ public function store(Request $request, $conversationId)
             return response()->json(['error' => 'Non autorisé'], 403);
         }
 
-        if ($message->created_at->diffInMinutes(now()) > 30) {
+        if ($message->created_at->diffInMinutes(now()) > 10) {
             return response()->json(['error' => 'Délai expiré'], 403);
         }
 

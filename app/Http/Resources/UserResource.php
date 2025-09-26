@@ -19,24 +19,32 @@ class UserResource extends JsonResource
             'nom' => $this->nom,
             'prenom' => $this->prenom,
             'email' => $this->email,
-            'role' => $this->role,
+            'role' => $this->rolerole_actif,
             'actif' => (bool)$this->is_active,
             'last_login' => $this->last_login,
             'email_verified_at' => $this->email_verified_at,
         ];
-        if ($status =$this->isCandidat() || $this->isRecruteur()) {
+        if ($status = $this->isCandidat() || $this->isRecruteur()) {
             $user['profilCompleted'] = $status;
         }
+        if ($this->rolerole_actif === 'Professionnel') {
+            $user['professionnel'] = new ProfessionnelResource($this->professionnel);
+        } else {
+            $user['particulier'] = new ParticulierResource($this->particulier);
+        }
+        // if (isset($this->professionnel)) {
+        //     $user['professionnel'] = new ProfessionnelResource($this->professionnel);
+        // }
+        // if (isset($this->particulier)) {
+        //     $user['particulier'] = new ParticulierResource($this->particulier);
+        // }
+        if (isset($this->skills)) {
+            $user['skills'] = UserSkillResource::collection($this->skills);
+        }
+        if (isset($this->experiences)) {
+            $user['experiences'] = ExperienceResource::collection($this->experiences);
+        }
+
         return $user;
-        // [
-        //     'id' => $this->id,
-        //     'nom' => $this->nom,
-        //     'prenom' => $this->prenom,
-        //     'email' => $this->email,
-        //     'role' => $this->role,
-        //     'actif' => (bool)$this->is_active,
-        //     'last_login' => $this->last_login,
-        //     'email_verified_at' => $this->email_verified_at,
-        // ];
     }
 }

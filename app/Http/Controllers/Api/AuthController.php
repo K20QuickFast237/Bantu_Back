@@ -61,6 +61,12 @@ class AuthController extends Controller
     public function user(): UserResource
     {
         $user = Auth::user();
+        // $user->rolerole_actif === 'Professionnel' ? $user->particulier : $user->professionnel; // : $user->particulier;
+        $user->formations;
+        $user->experiences;
+        $user->skills;
+        // $user->load('particulier', 'professionnel');
+        // return response()->json($user);
         return new UserResource($user);
     }
 

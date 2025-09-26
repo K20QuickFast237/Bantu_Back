@@ -22,6 +22,7 @@ class ProfessionnelProfileController extends Controller
         }
 
         $professionnel = Professionnel::create($data);
+        $user->update(['role_actif' => 'Professionnel']);
 
         return response()->json([
             'message' => 'Profil professionnel complété avec succès',
