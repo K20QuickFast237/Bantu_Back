@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -28,8 +29,13 @@ class AuthController extends Controller
         $user = User::query()->create($data);
         event(new Registered($user));
 
+        $hash = sha1($user->email);
+        $signedUrl = URL::signedRoute('verification.verify', ['id' => $user->id, 'hash' => $hash]);
+
         return response()->json([
-            'message' => 'User successfully registered, Check your mail to verify your account.'
+            'message' => 'User successfully registered, Check your mail to verify your account.',
+            'token' => $user->id . '/' . $hash,
+            'signature' => $signedUrl
         ], 201);
     }
 
