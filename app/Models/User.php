@@ -28,7 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassw
         'email',
         'photo_profil',
         'password',
-        'role',
+        'role_actif',
         'is_active',
         'last_login',
         'email_verified_at',
@@ -76,7 +76,7 @@ class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassw
     {
         return $this->hasMany(Experience::class);
     }
-        
+
     /**
      * skills
      */
