@@ -48,7 +48,7 @@ class AppServiceProvider extends ServiceProvider
             return (new MailMessage)
                 ->subject('Verify Email Address')
                 ->greeting('Hello '.$notifiable->nom.' '.$notifiable->prenom.',')
-                ->line("Please enter the code <b>$code</b> to verify your email address.")
+                ->line("Please enter the code $code to verify your email address.")
                 ->line('Or click the button below.')
                 ->action('Verify Email Address', $url.'&code='.$code)
                 ->line('If you did not create an account, no further action is required.')

@@ -250,11 +250,11 @@ class AuthController extends Controller
                 'nom' => $userData['family_name'],
                 'prenom' => $userData['given_name'],
                 'email' => $userData['email'],
-                'email_verified_at' => $userData['email_verified'] ? now() : null,
+                'email_verified_at' => now(),
                 'password' => $userData['sub'],
                 'photo_profil' => $userData['picture'],
             ]);
-            $user = User::where('email', $user['email'])->first();  //->where('linkedin_id', $user['linkedin_id'])
+            $user = User::where('email', $user->email)->first();  //->where('linkedin_id', $user['linkedin_id'])
         }
         return $user;
     }
