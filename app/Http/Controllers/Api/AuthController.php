@@ -31,11 +31,12 @@ class AuthController extends Controller
 
         $hash = sha1($user->email);
         $signedUrl = URL::signedRoute('verification.verify', ['id' => $user->id, 'hash' => $hash]);
+        $signature = explode('?signature=', $signedUrl)[1];
 
         return response()->json([
             'message' => 'User successfully registered, Check your mail to verify your account.',
             'token' => $user->id . '/' . $hash,
-            'signature' => $signedUrl
+            'signature' => $signature
         ], 201);
     }
 
