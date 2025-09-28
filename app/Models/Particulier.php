@@ -21,6 +21,10 @@ class Particulier extends Model
         'image_profil',
         'cv_link',
         'lettre_motivation_link',
+        'portfolio_link',
+        'linkedin_link',
+        'behance_link',
+        'github_link',
         'is_visible',
     ];
 
