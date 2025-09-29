@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\OffreEmploi;
 use App\Traits\ApiResponseHandler;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 
 class OffreEmploiController extends Controller
 {
@@ -105,8 +106,8 @@ class OffreEmploiController extends Controller
             // Gestion de l'upload du document d'annonce
             if ($request->hasFile('document_annonce')) {
                 // Supprime l'ancien fichier si existe
-                if ($offreEmploi->document_annonce && \Storage::disk('public')->exists($offreEmploi->document_annonce)) {
-                    \Storage::disk('public')->delete($offreEmploi->document_annonce);
+                if ($offreEmploi->document_annonce && Storage::disk('public')->exists($offreEmploi->document_annonce)) {
+                    Storage::disk('public')->delete($offreEmploi->document_annonce);
                 }
 
                 $data['document_annonce'] = $request->file('document_annonce')->store(
