@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Enums\RoleValues;
 use App\Http\Requests\StoreOffreEmploiRequest;
 use App\Http\Requests\UpdateOffreEmploiRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -47,6 +48,10 @@ class OffreEmploiController extends Controller
 
             // Récupère automatiquement l'employeur depuis l'utilisateur connecté
             $data['employeur_id'] = $request->user()->professionnel->id;
+
+            if ($request->user()->role_actif !== RoleValues::RECRUTEUR) {
+                $request->user()->update(['role_actif' => RoleValues::RECRUTEUR]);
+            }
 
             $skills = $data['skills'] ?? null;
             unset($data['skills']);

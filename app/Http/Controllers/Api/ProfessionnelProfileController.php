@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Enums\RoleValues;
 use Illuminate\Http\Request;
 use App\Http\Requests\Api\StoreProfessionnelRequest;
 use App\Models\Professionnel;
+use App\Models\Role;
 use Illuminate\Support\Facades\Auth;
 
 class ProfessionnelProfileController extends Controller
@@ -22,10 +24,10 @@ class ProfessionnelProfileController extends Controller
         }
 
         $professionnel = Professionnel::create($data);
-        $user->update(['role_actif' => 'Professionnel']);
+        $user->update(['role_actif' => RoleValues::RECRUTEUR]);
 
         return response()->json([
-            'message' => 'Profil professionnel complété avec succès',
+            'message' => "Profil ".RoleValues::RECRUTEUR." complété avec succès",
             'data' => $professionnel,
         ], 201);
     }

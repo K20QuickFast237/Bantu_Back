@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Enums\RoleValues;
 use App\Http\Requests\StoreCandidatureRequest;
 use App\Http\Requests\UpdateCandidatureRequest;
 use App\Http\Requests\UpdateCandidatureRecruteurRequest;
@@ -72,6 +73,10 @@ class CandidatureController extends Controller
             }
 
             $candidature = Candidature::create($data);
+
+            if ($user->role_actif !== RoleValues::RECRUTEUR && $user->role_actif !== RoleValues::CANDIDAT) {
+                $user->update(['role_actif' => RoleValues::CANDIDAT]);
+            }
 
             return $candidature->load(['offre.skills']);
         }, 201);

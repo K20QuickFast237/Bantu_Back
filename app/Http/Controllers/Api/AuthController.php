@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Events\PasswordReseted;
 use App\Http\Controllers\Controller;
+use App\Http\Enums\RoleValues;
 use App\Http\Requests\Api\CreateUserRequest;
 use App\Http\Requests\Api\LoginRequest;
 use App\Http\Resources\UserResource;
@@ -25,7 +26,7 @@ class AuthController extends Controller
     {
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
-        
+
         $user = User::query()->create($data);
         event(new Registered($user));
 
@@ -53,7 +54,8 @@ class AuthController extends Controller
         ], 401);
     }
 
-    Private function LogUserIn(User $user) {
+    private function LogUserIn(User $user)
+    {
         User::query()->where('id', $user->id)->update([
             'last_login' => now()
         ]);
@@ -68,12 +70,11 @@ class AuthController extends Controller
     public function user(): UserResource
     {
         $user = Auth::user();
-        // $user->rolerole_actif === 'Professionnel' ? $user->particulier : $user->professionnel; // : $user->particulier;
+        // $user->rolerole_actif === RoleValues::RECRUTEUR ? $user->particulier : $user->professionnel; // : $user->particulier;
         $user->formations;
         $user->experiences;
         $user->skills;
-        // $user->load('particulier', 'professionnel');
-        // return response()->json($user);
+        
         return new UserResource($user);
     }
 
@@ -99,7 +100,7 @@ class AuthController extends Controller
             ], 403);
         }
 
-        if (! $code == substr($hash, - 11, 6)){
+        if (! $code == substr($hash, -11, 6)) {
             return response()->json(['message' => 'Invalid verification code.'], 403);
         }
 
@@ -131,7 +132,7 @@ class AuthController extends Controller
         ]);
 
         $status = Password::sendResetLink($request->only('email'));
- 
+
         // return $status === Password::ResetLinkSent
         //     ? back()->with(['status' => __($status)])
         //     : back()->withErrors(['email' => __($status)]);
@@ -139,7 +140,7 @@ class AuthController extends Controller
         return $status === Password::ResetLinkSent
             ? response()->json(['message' => __($status)])
             : response()->json(['email' => __($status)], 404);
-        
+
         // $user = User::where('email', $request->email)->first();
         // if ($user) {
         //     $user->sendPasswordResetNotification($token);
@@ -156,7 +157,7 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required|min:8',
         ]);
-    
+
         $status = Password::reset($request->only('email', 'password', 'token'), function (User $user, string $password) {
             $user->forceFill([
                 'password' => Hash::make($password)
@@ -173,7 +174,7 @@ class AuthController extends Controller
             : response()->json(['email' => __($status)], 404);
     }
 
-    public function googleLogin(Request $request) 
+    public function googleLogin(Request $request)
     {
         $client = new \Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
         $userData = $client->verifyIdToken($request->JWT_ID_Token);
@@ -217,7 +218,7 @@ class AuthController extends Controller
         $clientId = env('LINKEDIN_CLIENT_ID'); //config('services.linkedin.client_id');
         $clientSecret = env('LINKEDIN_CLIENT_SECRET'); //config('services.linkedin.client_secret');
         $redirectUri = env('LINKEDIN_REDIRECT'); //config('services.linkedin.redirect_uri');
-        
+
         $response = Http::asForm()->post('https://www.linkedin.com/oauth/v2/accessToken', [
             'code'          => $code,
             'client_id'     => $clientId,
@@ -227,6 +228,9 @@ class AuthController extends Controller
         ]);
         $accessToken = $response->json('access_token');
         $userData = $this->getUserData($accessToken);
+        if (isset($userData['status']) && $userData['status'] === 401) {
+            return response()->json(['message' => 'Code Expiré', 'error' => $userData['message']], 401);
+        }
         $user = $this->findOrCreateUser($userData);
         Auth::login($user);
 

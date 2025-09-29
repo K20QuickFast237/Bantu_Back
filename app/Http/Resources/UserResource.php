@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Enums\RoleValues;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -27,7 +28,7 @@ class UserResource extends JsonResource
         if ($status = $this->isCandidat() || $this->isRecruteur()) {
             $user['profilCompleted'] = $status;
         }
-        if ($this->rolerole_actif === 'Professionnel') {
+        if ($this->rolerole_actif === RoleValues::RECRUTEUR) {
             $user['professionnel'] = new ProfessionnelResource($this->professionnel);
         } else {
             $user['particulier'] = new ParticulierResource($this->particulier);
