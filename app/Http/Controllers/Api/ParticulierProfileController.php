@@ -30,7 +30,7 @@ class ParticulierProfileController extends Controller
         }
 
         return response()->json([
-            'message' => "Profil ".RoleValues::CANDIDAT." complété avec succès",
+            'message' => "Profil complété avec succès",
             'data' => $particulier,
         ], 201);
     }

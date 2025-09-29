@@ -27,7 +27,7 @@ class ProfessionnelProfileController extends Controller
         $user->update(['role_actif' => RoleValues::RECRUTEUR]);
 
         return response()->json([
-            'message' => "Profil ".RoleValues::RECRUTEUR." complété avec succès",
+            'message' => "Profil complété avec succès",
             'data' => $professionnel,
         ], 201);
     }
