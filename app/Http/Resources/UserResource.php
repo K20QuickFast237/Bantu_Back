@@ -28,17 +28,17 @@ class UserResource extends JsonResource
         if ($status = $this->isCandidat() || $this->isRecruteur()) {
             $user['profilCompleted'] = $status;
         }
-        if ($this->rolerole_actif === RoleValues::RECRUTEUR) {
-            $user['professionnel'] = new ProfessionnelResource($this->professionnel);
-        } else {
-            $user['particulier'] = new ParticulierResource($this->particulier);
-        }
-        // if (isset($this->professionnel)) {
+        // if ($this->rolerole_actif === RoleValues::RECRUTEUR) {
         //     $user['professionnel'] = new ProfessionnelResource($this->professionnel);
-        // }
-        // if (isset($this->particulier)) {
+        // } else {
         //     $user['particulier'] = new ParticulierResource($this->particulier);
         // }
+        if (isset($this->professionnel) && $this->professionnel) {
+            $user['professionnel'] = new ProfessionnelResource($this->professionnel);
+        }
+        if (isset($this->particulier) && $this->particulier) {
+            $user['particulier'] = new ParticulierResource($this->particulier);
+        }
         if (isset($this->skills)) {
             $user['skills'] = UserSkillResource::collection($this->skills);
         }
