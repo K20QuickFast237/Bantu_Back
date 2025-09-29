@@ -53,11 +53,27 @@ class OffreEmploiController extends Controller
                 $request->user()->update(['role_actif' => RoleValues::RECRUTEUR]);
             }
 
+            // Gestion des skills
             $skills = $data['skills'] ?? null;
             unset($data['skills']);
 
+            // Gestion de l'upload du document d'annonce
+            if ($request->hasFile('document_annonce')) {
+                $data['document_annonce'] = $request->file('document_annonce')->store(
+                    'documents_annonces', // dossier dans storage/app
+                    'public' // disque "public"
+                );
+            }
+
+            // Conversion des documents requis en JSON
+            if (isset($data['documents_requis']) && is_array($data['documents_requis'])) {
+                $data['documents_requis'] = json_encode($data['documents_requis']);
+            }
+
+            // Création de l'offre
             $offre = OffreEmploi::create($data);
 
+            // Synchronisation des skills si présents
             if ($skills) {
                 $syncData = [];
                 foreach ($skills as $index => $skillId) {
@@ -66,6 +82,7 @@ class OffreEmploiController extends Controller
                 $offre->skills()->sync($syncData);
             }
 
+            // Retour avec les skills ordonnés
             return $offre->load(['skills' => fn($q) => $q->orderBy('pivot_ordre_aff')]);
         }, 201);
     }
@@ -80,11 +97,33 @@ class OffreEmploiController extends Controller
             $this->authorize('update', $offreEmploi);
 
             $data = $request->validated();
+
+            // Skills à traiter séparément
             $skills = $data['skills'] ?? null;
             unset($data['skills']);
 
+            // Gestion de l'upload du document d'annonce
+            if ($request->hasFile('document_annonce')) {
+                // Supprime l'ancien fichier si existe
+                if ($offreEmploi->document_annonce && \Storage::disk('public')->exists($offreEmploi->document_annonce)) {
+                    \Storage::disk('public')->delete($offreEmploi->document_annonce);
+                }
+
+                $data['document_annonce'] = $request->file('document_annonce')->store(
+                    'documents_annonces',
+                    'public'
+                );
+            }
+
+            // Conversion des documents requis en JSON
+            if (isset($data['documents_requis']) && is_array($data['documents_requis'])) {
+                $data['documents_requis'] = json_encode($data['documents_requis']);
+            }
+
+            // Mise à jour de l'offre
             $offreEmploi->update($data);
 
+            // Mise à jour des skills
             if ($skills !== null) {
                 $syncData = [];
                 foreach ($skills as $index => $skillId) {

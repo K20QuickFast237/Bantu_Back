@@ -22,7 +22,10 @@ class StoreOffreEmploiRequest extends FormRequest
     public function rules(): array
     {
         return [
+            // Étape 2 : infos principales
             'titre_poste' => 'required|string|max:255',
+            'fonction' => 'nullable|string|max:255',
+            'lieu_travail' => 'nullable|string|max:255',
             'description_poste' => 'required|string',
             'exigences' => 'nullable|string',
             'responsabilites' => 'nullable|string',
@@ -31,10 +34,23 @@ class StoreOffreEmploiRequest extends FormRequest
             'type_contrat' => 'required|in:cdi,cdd,interim,stage,alternance,freelance,autre',
             'remuneration_min' => 'nullable|numeric|min:0',
             'remuneration_max' => 'nullable|numeric|gte:remuneration_min',
+            'document_annonce' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+
             'date_publication' => 'required|date',
             'date_limite_soumission' => 'required|date|after_or_equal:date_publication',
+
+            // Étape 3 : candidature
+            'email_candidature' => 'required|email|max:255',
+            'url_candidature' => 'nullable|url|max:255',
+            'instructions_candidature' => 'nullable|string',
+            'documents_requis' => 'nullable|array',
+            'documents_requis.*' => 'string|max:255',
+
+            // Étape 4 : état de l'offre
             'statut' => 'required|in:active,en_pause,fermee,archivee',
             'nombre_vues' => 'nullable|integer|min:0',
+
+            // Skills (si tu gardes la relation)
             'skills' => 'nullable|array',
             'skills.*' => 'exists:skills,id',
 
