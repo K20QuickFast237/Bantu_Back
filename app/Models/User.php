@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\Contracts\OAuthenticatable;
 use Laravel\Passport\HasApiTokens;
+use App\Http\Enums\RoleValues;
 
 class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassword, OAuthenticatable
 {
@@ -88,10 +89,13 @@ class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassw
     /**
      * roles
      */
-    public function roles(): BelongsToMany
-    {
-        return $this->belongsToMany(Role::class, 'user_roles')->withPivot('isCurrent');
-    }
+public function roles(): BelongsToMany
+{
+    return $this->belongsToMany(Role::class, 'user_roles')
+                ->using(RoleUser::class) // ton pivot personnalisé
+                ->withPivot('isCurrent');
+}
+
 
     // Vérifie si l'utilisateur est un candidat
     public function isCandidat(): bool
@@ -104,4 +108,23 @@ class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassw
     {
         return $this->professionnel()->exists();
     }
+
+
+
+public function isVendeur(): bool
+{
+    return $this->roles()
+                ->wherePivot('isCurrent', 1)
+                ->where('name', RoleValues::VENDEUR->value)
+                ->exists();
+}
+
+public function isAdmin(): bool
+{
+    return $this->roles()
+                ->wherePivot('isCurrent', 1)
+                ->where('name', RoleValues::ADMIN->value)
+                ->exists();
+}
+
 }

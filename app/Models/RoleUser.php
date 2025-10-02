@@ -18,8 +18,10 @@ class RoleUser extends Pivot
      *
      * @var list<string>
      */
-    protected $fillable = [
-        'user_id',
-        'role_id'
-    ];
+protected $fillable = [
+    'user_id',
+    'role_id',
+    'isCurrent', // <- ajouter pour pouvoir le remplir via attach
+];
+
 }

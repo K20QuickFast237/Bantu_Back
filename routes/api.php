@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ParticulierProfileController;
 use App\Http\Controllers\Api\ProfessionnelProfileController;
 use App\Http\Controllers\Api\FormationController;
@@ -15,6 +14,11 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\MatchingController;
 use App\Http\Controllers\Api\ConversationController;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\ShopController;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\API\TagController;
+use App\Http\Controllers\API\ProductController;
+use App\Http\Controllers\API\DeliveryMethodController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -101,13 +105,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('user', [AuthController::class, 'user']);
     Route::post('logout', [AuthController::class, 'logout']);
 
-    Route::prefix('a_products')->group(function () {
-        Route::get('/', [ProductController::class, 'index']);
-        Route::post('save', [ProductController::class, 'save']);
-        Route::get('{id}/show', [ProductController::class, 'show']);
-        Route::patch('{id}/update', [ProductController::class, 'update']);
-        Route::delete('{id}/delete', [ProductController::class, 'delete']);
-    });
+
 
     Route::middleware('auth:api')->group(function () {
         Route::post('/profile/particulier', [ParticulierProfileController::class, 'store']);
@@ -172,6 +170,109 @@ Route::middleware('auth:api')->group(function () {
         Route::post('candidatures/{candidature}/invite', [CandidatureController::class, 'sendInvitation'])
             ->middleware('can:isRecruteur');
     });
+
+    
     
 });
+
+Route::prefix('shops')->group(function() {
+
+    // ===============================
+    // CÔTÉ VENDEUR
+    // ===============================
+    Route::middleware(['auth:api','can:isVendeur'])->group(function() {
+        Route::post('/', [ShopController::class,'store']);           // créer boutique
+        Route::put('/{shop}', [ShopController::class,'update']);     // modifier boutique
+        Route::get('/my', [ShopController::class,'myShops']);        // voir ses boutiques
+        Route::patch('/{shop}/toggle', [ShopController::class,'toggleStatus']); // activer/désactiver
+    });
+
+    // ===============================
+    // CÔTÉ ADMIN
+    // ===============================
+    Route::middleware(['auth:api','can:isAdmin'])->group(function() {
+        Route::get('/', [ShopController::class,'index']);            // lister toutes
+        Route::patch('/{shop}/approve', [ShopController::class,'approve']);   // approuver
+        Route::patch('/{shop}/reject', [ShopController::class,'reject']);     // refuser
+        Route::patch('/{shop}/suspend', [ShopController::class,'suspend']);   // suspendre
+        Route::delete('/{shop}', [ShopController::class,'destroy']);          // supprimer
+    });
+
+    // ===============================
+    // CÔTÉ CLIENT
+    // ===============================
+    Route::get('/approved', [ShopController::class,'approvedShops']); // toutes approuvées
+});
+
+Route::prefix('categories')->group(function () {
+
+    // ===============================
+    // CÔTÉ ADMIN
+    // ===============================
+    Route::middleware(['auth:api','can:isAdmin'])->group(function() {
+        Route::get('/', [CategoryController::class,'index']);          // Lister toutes
+        Route::post('/', [CategoryController::class,'store']);         // Créer une catégorie
+        Route::put('/{category}', [CategoryController::class,'update']);  // Modifier
+        Route::delete('/{category}', [CategoryController::class,'destroy']); // Supprimer
+    });
+
+    // ===============================
+    // CÔTÉ CLIENT / VENDEUR
+    // ===============================
+    Route::get('/publicCat', [CategoryController::class,'publicIndex']); // Liste publique
+});
+
+Route::prefix('tags')->group(function () {
+
+    // ===============================
+    // CÔTÉ ADMIN
+    // ===============================
+    Route::middleware(['auth:api','can:isAdmin'])->group(function() {
+        Route::get('/', [TagController::class,'index']);         // lister tous les tags
+        Route::post('/', [TagController::class,'store']);        // créer un tag
+        Route::put('/{tag}', [TagController::class,'update']);   // modifier un tag
+        Route::delete('/{tag}', [TagController::class,'destroy']); // supprimer un tag
+    });
+
+    // ===============================
+    // CÔTÉ CLIENT / VENDEUR
+    // ===============================
+    Route::get('/publicTag', [TagController::class,'publicIndex']); // liste publique des tags
+});
+
+Route::prefix('products')->group(function() {
+
+    // Côté vendeur
+    Route::middleware(['auth:api','can:isVendeur'])->group(function() {
+        Route::post('/', [ProductController::class,'store']);           // créer produit
+        Route::put('/{product}', [ProductController::class,'update']);  // modifier
+        Route::get('/my/{shop_id}', [ProductController::class,'myProducts']);     // mes produits
+    });
+
+    // Côté admin
+    Route::middleware(['auth:api','can:isAdmin'])->group(function() {
+        Route::patch('/{product}/toggle', [ProductController::class,'toggleStatus']); // activer/désactiver
+        Route::delete('/{product}', [ProductController::class,'destroy']);            // supprimer
+    });
+
+    // Côté client
+    Route::get('/shop/{shop_id}', [ProductController::class,'shopProducts']); // produits d'une boutique
+
+    // Filtrer les produits par catégorie et/ou tags
+    Route::get('/filter', [ProductController::class, 'filterProducts']);
+
+});
+
+
+Route::middleware(['auth:api'])->prefix('shops/{shopId}')->group(function () {
+
+    // Gestion des modes de livraison pour une boutique
+    Route::get('delivery-methods', [DeliveryMethodController::class, 'index']);
+    Route::post('delivery-methods', [DeliveryMethodController::class, 'store']);
+    Route::delete('delivery-methods/{deliveryMethodId}', [DeliveryMethodController::class, 'destroy']);
+
+});
+
+
+
 
