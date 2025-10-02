@@ -9,7 +9,7 @@ class Shop extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id','name','logo','description','location','status'];
+    protected $fillable = ['user_id','name','logo','banner','description','location','status'];
 
     public function user() {
         return $this->belongsTo(User::class);

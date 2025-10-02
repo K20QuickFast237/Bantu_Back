@@ -22,19 +22,31 @@ class ShopController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'logo' => 'nullable|image',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'banner' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
             'description' => 'nullable|string',
             'location' => 'nullable|string',
         ]);
 
-        $shop = Shop::create([
+        $data = [
             'user_id' => Auth::id(),
             'name' => $request->name,
-            'logo' => $request->logo,
             'description' => $request->description,
             'location' => $request->location,
             'status' => 'pending',
-        ]);
+        ];
+
+        // Upload du logo
+        if ($request->hasFile('logo')) {
+            $data['logo'] = $request->file('logo')->store('shop', 'public');
+        }
+
+        // Upload de la bannière
+        if ($request->hasFile('banner')) {
+            $data['banner'] = $request->file('banner')->store('shop', 'public');
+        }
+
+        $shop = Shop::create($data);
 
         return response()->json($shop, 201);
     }
@@ -42,22 +54,43 @@ class ShopController extends Controller
     // Modifier sa boutique
     public function update(Request $request, Shop $shop)
     {
-        // Vérifie que l'utilisateur peut modifier cette boutique
         if (!Gate::allows('update-shop', $shop)) {
             return response()->json(['message' => 'This action is unauthorized.'], 403);
         }
 
         $request->validate([
             'name' => 'sometimes|string|max:255',
-            'logo' => 'nullable|image',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'banner' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
             'description' => 'nullable|string',
             'location' => 'nullable|string',
         ]);
 
-        $shop->update($request->only(['name', 'logo', 'description', 'location']));
+        $data = $request->only(['name', 'description', 'location']);
+
+        // Upload du logo
+        if ($request->hasFile('logo')) {
+            // Supprimer l'ancien si existe
+            if ($shop->logo && Storage::disk('public')->exists($shop->logo)) {
+                Storage::disk('public')->delete($shop->logo);
+            }
+            $data['logo'] = $request->file('logo')->store('shop', 'public');
+        }
+
+        // Upload de la bannière
+        if ($request->hasFile('banner')) {
+            // Supprimer l'ancienne si existe
+            if ($shop->banner && Storage::disk('public')->exists($shop->banner)) {
+                Storage::disk('public')->delete($shop->banner);
+            }
+            $data['banner'] = $request->file('banner')->store('shop', 'public');
+        }
+
+        $shop->update($data);
 
         return response()->json($shop);
     }
+
 
     // Voir ses boutiques (vendeur)
     public function myShops()

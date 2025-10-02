@@ -247,12 +247,12 @@ Route::prefix('products')->group(function() {
         Route::post('/', [ProductController::class,'store']);           // créer produit
         Route::put('/{product}', [ProductController::class,'update']);  // modifier
         Route::get('/my/{shop_id}', [ProductController::class,'myProducts']);     // mes produits
+        Route::delete('/{product}', [ProductController::class,'destroy']);            // supprimer
     });
 
     // Côté admin
     Route::middleware(['auth:api','can:isAdmin'])->group(function() {
         Route::patch('/{product}/toggle', [ProductController::class,'toggleStatus']); // activer/désactiver
-        Route::delete('/{product}', [ProductController::class,'destroy']);            // supprimer
     });
 
     // Côté client
