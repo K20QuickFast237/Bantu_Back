@@ -34,6 +34,26 @@ class CandidatureController extends Controller
     }
 
     /**
+     * Recruteur : Voir toutes les candidatures d'une offre spécifique
+     */
+    public function candidaturesByOffre($offreId): JsonResponse
+    {
+        return $this->handleApiNoTransaction(function () use ($offreId) {
+            $user = auth()->user();
+            $professionnel = $user->professionnel;
+
+            $candidatures = Candidature::whereHas('offre', function ($q) use ($professionnel, $offreId) {
+                $q->where('employeur_id', $professionnel->id)
+                ->where('id', $offreId);
+            })
+            ->with(['particulier', 'offre.skills'])
+            ->get();
+
+            return $candidatures;
+        });
+    }
+
+    /**
      * Candidat : Voir ses candidatures
      */
     public function myCandidatures(): JsonResponse

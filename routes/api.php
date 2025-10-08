@@ -163,6 +163,10 @@ Route::middleware('auth:api')->group(function () {
         // Recruteur : voir toutes les candidatures pour ses offres
         Route::get('candidatures', [CandidatureController::class, 'index'])
             ->middleware('can:isRecruteur');
+        
+        //Recruteur : voir toutes les candidatures pour une offre precise
+        Route::get('/offres/{offre}/candidatures', [CandidatureController::class, 'candidaturesByOffre'])
+            ->middleware('can:isRecruteur');;
 
         // Recruteur : mettre à jour le statut ou la note IA
         Route::put('candidatures/{candidature}/status', [CandidatureController::class, 'updateStatus'])
