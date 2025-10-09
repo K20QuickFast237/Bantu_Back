@@ -134,15 +134,15 @@ Route::middleware('auth:api')->group(function () {
         Route::apiResource('invitations', InvitationController::class);
     });
 
-    // Routes publiques 
+    // Routes publiques
     Route::get('/offres', [OffreEmploiController::class, 'index']);
     Route::get('/offres/{offreEmploi}', [OffreEmploiController::class, 'show']);
 
     // Routes protégées (recruteurs connectés)
     Route::middleware('auth:api')->group(function () {
         Route::get('/mesoffres', [OffreEmploiController::class, 'mesOffres']);
-        Route::post('/offres', [OffreEmploiController::class, 'store']); 
-        Route::put('/offres/{offreEmploi}', [OffreEmploiController::class, 'update']); 
+        Route::post('/offres', [OffreEmploiController::class, 'store']);
+        Route::put('/offres/{offreEmploi}', [OffreEmploiController::class, 'update']);
         Route::delete('/offres/{offreEmploi}', [OffreEmploiController::class, 'destroy']);
     });
 
@@ -151,6 +151,9 @@ Route::middleware('auth:api')->group(function () {
         // Candidat : créer une candidature
         Route::post('candidatures', [CandidatureController::class, 'store'])
             ->middleware('can:isCandidat');
+
+        //voir les détails d'une candidature
+        Route::get('/candidatures/{candidature}', [CandidatureController::class, 'show']);
 
         // Candidat : voir toutes ses candidatures
         Route::get('candidatures/me', [CandidatureController::class, 'myCandidatures'])
@@ -163,7 +166,7 @@ Route::middleware('auth:api')->group(function () {
         // Recruteur : voir toutes les candidatures pour ses offres
         Route::get('candidatures', [CandidatureController::class, 'index'])
             ->middleware('can:isRecruteur');
-        
+
         //Recruteur : voir toutes les candidatures pour une offre precise
         Route::get('/offres/{offre}/candidatures', [CandidatureController::class, 'candidaturesByOffre'])
             ->middleware('can:isRecruteur');;
@@ -176,6 +179,6 @@ Route::middleware('auth:api')->group(function () {
         Route::post('candidatures/{candidature}/invite', [CandidatureController::class, 'sendInvitation'])
             ->middleware('can:isRecruteur');
     });
-    
+
 });
 

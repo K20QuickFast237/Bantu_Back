@@ -103,6 +103,24 @@ class CandidatureController extends Controller
     }
 
     /**
+     * Voir les détails d'une candidature spécifique
+     * (accessible au recruteur propriétaire de l'offre ou au candidat concerné)
+     */
+
+    public function show(Candidature $candidature): JsonResponse
+    {
+        return $this->handleApiNoTransaction(function () use ($candidature) {
+            $this->authorize('view', $candidature);
+
+            return $candidature->load([
+                'offre.skills',
+                'offre.employeur',
+                'particulier'
+            ]);
+        });
+    }
+
+    /**
      * Candidat : Modifier sa candidature
      * Seulement si statut = en_revision (policy)
      */
@@ -127,7 +145,7 @@ class CandidatureController extends Controller
     }
 
     /**
-     * Recruteur : Mettre à jour statut 
+     * Recruteur : Mettre à jour statut
      */
     public function updateStatus(UpdateCandidatureRecruteurRequest $request, Candidature $candidature): JsonResponse
     {
