@@ -61,4 +61,9 @@ class OffreEmploi extends Model
         return $this->belongsToMany(User::class, 'favoris', 'offre_emploi_id', 'user_id')
                     ->withTimestamps();
     }
+
+    public function categorie()
+    {
+        return $this->belongsTo(Categorie::class, 'categorie_id');
+    }
 }

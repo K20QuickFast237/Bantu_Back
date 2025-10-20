@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\NewsletterController;
 use App\Http\Controllers\Api\MetadataController;
 use App\Http\Controllers\Api\EntrepriseController;
 use App\Http\Controllers\Api\FavoriController;
+use App\Http\Controllers\Api\CategorieController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -57,6 +58,15 @@ Route::middleware('auth:api')->prefix('favoris')->group(function () {
     Route::post('/ajouter', [FavoriController::class, 'add']);
     Route::post('/retirer', [FavoriController::class, 'remove']);
     Route::get('/', [FavoriController::class, 'list']);
+});
+
+// Routes pour gérer les categories (des offres)
+Route::prefix('categories')->group(function () {
+    Route::get('/', [CategorieController::class, 'index']);
+    Route::get('/{id}', [CategorieController::class, 'show']);
+    Route::post('/', [CategorieController::class, 'store']);
+    Route::put('/{id}', [CategorieController::class, 'update']);   
+    Route::delete('/{id}', [CategorieController::class, 'destroy']);
 });
 
 // Routes matching pour les listings de candidats et d'offres
