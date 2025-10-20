@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\ConversationController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\NewsletterController;
 use App\Http\Controllers\Api\MetadataController;
+use App\Http\Controllers\Api\EntrepriseController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -43,6 +44,12 @@ Route::prefix('newsletter')->group(function () {
 
 //Route pour les types de contrat
 Route::get('/types-contrat', [MetadataController::class, 'typesContrat']);
+
+//Route pour la liste des entreprises ayant des offres en cours ou ayant au moins une offfre
+Route::prefix('entreprises')->group(function () {
+    Route::get('/avec-offres-en-cours', [EntrepriseController::class, 'entreprisesAvecOffresEnCours']);
+    Route::get('/avec-offres', [EntrepriseController::class, 'entreprisesAvecOffres']);
+});
 
 
 // Routes matching pour les listings de candidats et d'offres
