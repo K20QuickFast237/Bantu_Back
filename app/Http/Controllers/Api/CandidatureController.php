@@ -56,7 +56,7 @@ class CandidatureController extends Controller
     /**
      * Candidat : Voir ses candidatures
      */
-    public function myCandidatures(): JsonResponse
+    public function Candidatures(): JsonResponse
     {
         return $this->handleApiNoTransaction(function () {
             $user = auth()->user();

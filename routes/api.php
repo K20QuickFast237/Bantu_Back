@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\MatchingController;
 use App\Http\Controllers\Api\ConversationController;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\NewsletterController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -30,6 +31,13 @@ Route::middleware('auth:api')->prefix('user')->group(function () {
     Route::post('/{user}/role', [UserController::class, 'setUserRole']);
     Route::delete('/{user}/skill/{skill}', [UserController::class, 'deleteUserSkill']);
     Route::delete('/{user}/role/{role}', [UserController::class, 'deleteUserRole']);
+});
+
+//Routes: gestion de la newsletter
+Route::prefix('newsletter')->group(function () {
+    Route::post('/subscribe', [NewsletterController::class, 'subscribe']);
+    Route::post('/unsubscribe', [NewsletterController::class, 'unsubscribe']);
+    Route::get('/subscribers', [NewsletterController::class, 'index']); 
 });
 
 
