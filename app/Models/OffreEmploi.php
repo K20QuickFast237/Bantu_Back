@@ -11,21 +11,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class OffreEmploi extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
-        'employeur_id', 
-        'titre_poste', 
-        'description_poste', 
-        'exigences', 
+        'employeur_id',
+        'titre_poste',
+        'description_poste',
+        'exigences',
         'responsabilites',
-        'ville', 
-        'pays', 
-        'type_contrat', 
-        'remuneration_min', 
+        'ville',
+        'pays',
+        'type_contrat',
+        'remuneration_min',
         'remuneration_max',
-        'date_publication', 
-        'date_limite_soumission', 
-        'statut', 
+        'date_publication',
+        'date_limite_soumission',
+        'statut',
         'nombre_vues',
         'fonction',
         'lieu_travail',
@@ -36,13 +36,13 @@ class OffreEmploi extends Model
         'documents_requis',
     ];
 
-    
+
     public function employeur(): BelongsTo
     {
         return $this->belongsTo(Professionnel::class, 'employeur_id');
     }
 
-    
+
     public function skills(): BelongsToMany
     {
         return $this->belongsToMany(Skill::class, 'offre_skills', 'offre_id', 'skill_id')
@@ -50,9 +50,15 @@ class OffreEmploi extends Model
                     ->withTimestamps();
     }
 
-    
+
     public function candidatures(): HasMany
     {
         return $this->hasMany(Candidature::class, 'offre_id');
+    }
+
+    public function favoris()
+    {
+        return $this->belongsToMany(User::class, 'favoris', 'offre_emploi_id', 'user_id')
+                    ->withTimestamps();
     }
 }

@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\NewsletterController;
 use App\Http\Controllers\Api\MetadataController;
 use App\Http\Controllers\Api\EntrepriseController;
+use App\Http\Controllers\Api\FavoriController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -51,6 +52,12 @@ Route::prefix('entreprises')->group(function () {
     Route::get('/avec-offres', [EntrepriseController::class, 'entreprisesAvecOffres']);
 });
 
+//Route pour les favoris
+Route::middleware('auth:api')->prefix('favoris')->group(function () {
+    Route::post('/ajouter', [FavoriController::class, 'add']);
+    Route::post('/retirer', [FavoriController::class, 'remove']);
+    Route::get('/', [FavoriController::class, 'list']);
+});
 
 // Routes matching pour les listings de candidats et d'offres
 Route::get('matching/candidate/{candidateId}', [MatchingController::class, 'candidateMatches']);
