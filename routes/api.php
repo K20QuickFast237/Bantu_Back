@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\MatchingController;
 use App\Http\Controllers\Api\ConversationController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\NewsletterController;
+use App\Http\Controllers\Api\MetadataController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -37,8 +38,11 @@ Route::middleware('auth:api')->prefix('user')->group(function () {
 Route::prefix('newsletter')->group(function () {
     Route::post('/subscribe', [NewsletterController::class, 'subscribe']);
     Route::post('/unsubscribe', [NewsletterController::class, 'unsubscribe']);
-    Route::get('/subscribers', [NewsletterController::class, 'index']); 
+    Route::get('/subscribers', [NewsletterController::class, 'index']);
 });
+
+//Route pour les types de contrat
+Route::get('/types-contrat', [MetadataController::class, 'typesContrat']);
 
 
 // Routes matching pour les listings de candidats et d'offres
