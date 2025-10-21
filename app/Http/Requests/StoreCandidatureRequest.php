@@ -27,6 +27,8 @@ class StoreCandidatureRequest extends FormRequest
             // Mode Upload
             'cv_url'         => 'required_without:cv_genere|file|mimes:pdf,doc,docx|max:2048',
             'motivation_url' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+            'autres_documents' => 'nullable|array',
+            'autres_documents.*' => 'file|mimes:pdf,doc,docx,jpg,png|max:4096',
 
             // Mode Profil
             // Ici, au lieu de boolean, cv_genere stockera un snapshot JSON → donc string

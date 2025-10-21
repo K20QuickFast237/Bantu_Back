@@ -31,11 +31,13 @@ class UpdateCandidatureRequest extends FormRequest
             'cv_url'         => 'nullable|file|mimes:pdf,doc,docx|max:2048',
             'motivation_url' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
             'motivation_text'=> 'nullable|string',
+            'autres_documents' => 'sometimes|array',
+            'autres_documents.*' => 'file|mimes:pdf,doc,docx,jpg,png|max:4096',
 
             // Snapshot du profil
             'cv_genere'      => 'nullable|json',
         ];
-        
+
     }
 
     public function messages(): array

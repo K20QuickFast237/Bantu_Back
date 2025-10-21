@@ -87,6 +87,18 @@ class CandidatureController extends Controller
                 $data['motivation_url'] = $request->file('motivation_url')->store('motivations', 'public');
             }
 
+            // Gestion des autres documents
+            $autresDocs = [];
+            if ($request->hasFile('autres_documents')) {
+                foreach ($request->file('autres_documents') as $key => $file) {
+                    $autresDocs[$key] = $file->store('autres_documents', 'public');
+                }
+            }
+
+            if (!empty($autresDocs)) {
+                $data['autres_documents'] = json_encode($autresDocs);
+            }
+
             // Snapshot JSON du profil si candidature avec profil
             if ($request->boolean('cv_genere', false)) {
                 $data['cv_genere'] = $cvSnapshotService->generate(auth()->user());
@@ -136,6 +148,17 @@ class CandidatureController extends Controller
             }
             if ($request->hasFile('motivation_url')) {
                 $data['motivation_url'] = $request->file('motivation_url')->store('motivations', 'public');
+            }
+
+            // Autres documents (ajoutés ou remplacés)
+            if ($request->hasFile('autres_documents')) {
+                $autresDocs = json_decode($candidature->autres_documents ?? '[]', true);
+
+                foreach ($request->file('autres_documents') as $key => $file) {
+                    $autresDocs[$key] = $file->store('autres_documents', 'public');
+                }
+
+                $data['autres_documents'] = json_encode($autresDocs);
             }
 
             $candidature->update($data);

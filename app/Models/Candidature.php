@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Candidature extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'candidatures';
 
     protected $fillable = [
@@ -23,6 +23,7 @@ class Candidature extends Model
         'motivation_text',
         'note_ia',
         'commentaire_employeur',
+        'autres_documents',
     ];
 
     protected $casts = [
