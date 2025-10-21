@@ -53,6 +53,8 @@ class UpdateOffreEmploiRequest extends FormRequest
             // Skills
             'skills' => 'nullable|array',
             'skills.*' => 'exists:skills,id',
+
+            'categorie_id' => 'sometimes|exists:categories,id',
         ];
     }
 }

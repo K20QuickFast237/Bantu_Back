@@ -15,6 +15,11 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\MatchingController;
 use App\Http\Controllers\Api\ConversationController;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\NewsletterController;
+use App\Http\Controllers\Api\MetadataController;
+use App\Http\Controllers\Api\EntrepriseController;
+use App\Http\Controllers\Api\FavoriController;
+use App\Http\Controllers\Api\CategorieController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -32,6 +37,37 @@ Route::middleware('auth:api')->prefix('user')->group(function () {
     Route::delete('/{user}/role/{role}', [UserController::class, 'deleteUserRole']);
 });
 
+//Routes: gestion de la newsletter
+Route::prefix('newsletter')->group(function () {
+    Route::post('/subscribe', [NewsletterController::class, 'subscribe']);
+    Route::post('/unsubscribe', [NewsletterController::class, 'unsubscribe']);
+    Route::get('/subscribers', [NewsletterController::class, 'index']);
+});
+
+//Route pour les types de contrat
+Route::get('/types-contrat', [MetadataController::class, 'typesContrat']);
+
+//Route pour la liste des entreprises ayant des offres en cours ou ayant au moins une offfre
+Route::prefix('entreprises')->group(function () {
+    Route::get('/avec-offres-en-cours', [EntrepriseController::class, 'entreprisesAvecOffresEnCours']);
+    Route::get('/avec-offres', [EntrepriseController::class, 'entreprisesAvecOffres']);
+});
+
+//Route pour les favoris
+Route::middleware('auth:api')->prefix('favoris')->group(function () {
+    Route::post('/ajouter', [FavoriController::class, 'add']);
+    Route::post('/retirer', [FavoriController::class, 'remove']);
+    Route::get('/', [FavoriController::class, 'list']);
+});
+
+// Routes pour gérer les categories (des offres)
+Route::prefix('categories')->group(function () {
+    Route::get('/', [CategorieController::class, 'index']);
+    Route::get('/{id}', [CategorieController::class, 'show']);
+    Route::post('/', [CategorieController::class, 'store']);
+    Route::put('/{id}', [CategorieController::class, 'update']);   
+    Route::delete('/{id}', [CategorieController::class, 'destroy']);
+});
 
 // Routes matching pour les listings de candidats et d'offres
 Route::get('matching/candidate/{candidateId}', [MatchingController::class, 'candidateMatches']);
@@ -134,15 +170,15 @@ Route::middleware('auth:api')->group(function () {
         Route::apiResource('invitations', InvitationController::class);
     });
 
-    // Routes publiques 
+    // Routes publiques
     Route::get('/offres', [OffreEmploiController::class, 'index']);
     Route::get('/offres/{offreEmploi}', [OffreEmploiController::class, 'show']);
 
     // Routes protégées (recruteurs connectés)
     Route::middleware('auth:api')->group(function () {
         Route::get('/mesoffres', [OffreEmploiController::class, 'mesOffres']);
-        Route::post('/offres', [OffreEmploiController::class, 'store']); 
-        Route::put('/offres/{offreEmploi}', [OffreEmploiController::class, 'update']); 
+        Route::post('/offres', [OffreEmploiController::class, 'store']);
+        Route::put('/offres/{offreEmploi}', [OffreEmploiController::class, 'update']);
         Route::delete('/offres/{offreEmploi}', [OffreEmploiController::class, 'destroy']);
     });
 
@@ -151,6 +187,9 @@ Route::middleware('auth:api')->group(function () {
         // Candidat : créer une candidature
         Route::post('candidatures', [CandidatureController::class, 'store'])
             ->middleware('can:isCandidat');
+
+        //voir les détails d'une candidature
+        Route::get('/candidatures/{candidature}', [CandidatureController::class, 'show']);
 
         // Candidat : voir toutes ses candidatures
         Route::get('candidatures/me', [CandidatureController::class, 'myCandidatures'])
@@ -163,7 +202,7 @@ Route::middleware('auth:api')->group(function () {
         // Recruteur : voir toutes les candidatures pour ses offres
         Route::get('candidatures', [CandidatureController::class, 'index'])
             ->middleware('can:isRecruteur');
-        
+
         //Recruteur : voir toutes les candidatures pour une offre precise
         Route::get('/offres/{offre}/candidatures', [CandidatureController::class, 'candidaturesByOffre'])
             ->middleware('can:isRecruteur');;
@@ -176,6 +215,6 @@ Route::middleware('auth:api')->group(function () {
         Route::post('candidatures/{candidature}/invite', [CandidatureController::class, 'sendInvitation'])
             ->middleware('can:isRecruteur');
     });
-    
+
 });
 

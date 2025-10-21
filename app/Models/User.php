@@ -93,6 +93,12 @@ class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassw
         return $this->belongsToMany(Role::class, 'user_roles')->withPivot('isCurrent');
     }
 
+    public function favoris()
+    {
+        return $this->belongsToMany(OffreEmploi::class, 'favoris', 'user_id', 'offre_emploi_id')
+                    ->withTimestamps();
+    }
+
     // Vérifie si l'utilisateur est un candidat
     public function isCandidat(): bool
     {

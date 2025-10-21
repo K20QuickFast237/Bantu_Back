@@ -56,7 +56,7 @@ class CandidatureController extends Controller
     /**
      * Candidat : Voir ses candidatures
      */
-    public function myCandidatures(): JsonResponse
+    public function Candidatures(): JsonResponse
     {
         return $this->handleApiNoTransaction(function () {
             $user = auth()->user();
@@ -87,6 +87,18 @@ class CandidatureController extends Controller
                 $data['motivation_url'] = $request->file('motivation_url')->store('motivations', 'public');
             }
 
+            // Gestion des autres documents
+            $autresDocs = [];
+            if ($request->hasFile('autres_documents')) {
+                foreach ($request->file('autres_documents') as $key => $file) {
+                    $autresDocs[$key] = $file->store('autres_documents', 'public');
+                }
+            }
+
+            if (!empty($autresDocs)) {
+                $data['autres_documents'] = json_encode($autresDocs);
+            }
+
             // Snapshot JSON du profil si candidature avec profil
             if ($request->boolean('cv_genere', false)) {
                 $data['cv_genere'] = $cvSnapshotService->generate(auth()->user());
@@ -100,6 +112,24 @@ class CandidatureController extends Controller
 
             return $candidature->load(['offre.skills']);
         }, 201);
+    }
+
+    /**
+     * Voir les détails d'une candidature spécifique
+     * (accessible au recruteur propriétaire de l'offre ou au candidat concerné)
+     */
+
+    public function show(Candidature $candidature): JsonResponse
+    {
+        return $this->handleApiNoTransaction(function () use ($candidature) {
+            $this->authorize('view', $candidature);
+
+            return $candidature->load([
+                'offre.skills',
+                'offre.employeur',
+                'particulier'
+            ]);
+        });
     }
 
     /**
@@ -120,6 +150,17 @@ class CandidatureController extends Controller
                 $data['motivation_url'] = $request->file('motivation_url')->store('motivations', 'public');
             }
 
+            // Autres documents (ajoutés ou remplacés)
+            if ($request->hasFile('autres_documents')) {
+                $autresDocs = json_decode($candidature->autres_documents ?? '[]', true);
+
+                foreach ($request->file('autres_documents') as $key => $file) {
+                    $autresDocs[$key] = $file->store('autres_documents', 'public');
+                }
+
+                $data['autres_documents'] = json_encode($autresDocs);
+            }
+
             $candidature->update($data);
 
             return $candidature->load(['offre.skills']);
@@ -127,7 +168,7 @@ class CandidatureController extends Controller
     }
 
     /**
-     * Recruteur : Mettre à jour statut 
+     * Recruteur : Mettre à jour statut
      */
     public function updateStatus(UpdateCandidatureRecruteurRequest $request, Candidature $candidature): JsonResponse
     {

@@ -54,6 +54,8 @@ class StoreOffreEmploiRequest extends FormRequest
             'skills' => 'nullable|array',
             'skills.*' => 'exists:skills,id',
 
+            'categorie_id' => 'required|exists:categories,id',
+
         ];
     }
 }

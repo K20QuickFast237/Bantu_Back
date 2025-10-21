@@ -16,12 +16,21 @@ class CandidaturePolicy
         return false;
     }
 
+    
     /**
-     * Determine whether the user can view the model.
+     * Un utilisateur peut voir une candidature :
+     * - s’il est le candidat concerné
+     * - OU s’il est le recruteur propriétaire de l’offre
      */
     public function view(User $user, Candidature $candidature): bool
     {
-        return false;
+        $isCandidat = $user->particulier
+            && $user->particulier->id === $candidature->particulier_id;
+
+        $isRecruteur = $user->professionnel
+            && $user->professionnel->id === $candidature->offre->employeur_id;
+
+        return $isCandidat || $isRecruteur;
     }
 
     /**
@@ -93,4 +102,7 @@ class CandidaturePolicy
     {
         return $user->id === $candidature->offre->employeur_id;
     }
+
+
+
 }

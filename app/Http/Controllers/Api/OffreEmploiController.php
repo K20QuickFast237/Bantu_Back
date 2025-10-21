@@ -9,6 +9,7 @@ use App\Http\Requests\StoreOffreEmploiRequest;
 use App\Http\Requests\UpdateOffreEmploiRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\OffreEmploi;
+use App\Models\Categorie;
 use App\Traits\ApiResponseHandler;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
@@ -23,7 +24,7 @@ class OffreEmploiController extends Controller
     public function index(): JsonResponse
     {
         return $this->handleApiNoTransaction(function () {
-            return OffreEmploi::with(['skills' => fn($q) => $q->orderBy('pivot_ordre_aff'), 'employeur'])
+            return OffreEmploi::with(['skills' => fn($q) => $q->orderBy('pivot_ordre_aff'), 'employeur', 'categorie'])
                               ->where('statut', 'active')
                               ->paginate(10);
         });
@@ -34,8 +35,12 @@ class OffreEmploiController extends Controller
      */
     public function show(OffreEmploi $offreEmploi): JsonResponse
     {
-        return $this->handleApiNoTransaction(fn() => 
-            $offreEmploi->load(['skills' => fn($q) => $q->orderBy('pivot_ordre_aff'), 'employeur'])
+        return $this->handleApiNoTransaction(fn() =>
+            $offreEmploi->load([
+                'skills' => fn($q) => $q->orderBy('pivot_ordre_aff'),
+                'employeur',
+                'categorie',
+            ])
         );
     }
 
@@ -84,7 +89,10 @@ class OffreEmploiController extends Controller
             }
 
             // Retour avec les skills ordonnés
-            return $offre->load(['skills' => fn($q) => $q->orderBy('pivot_ordre_aff')]);
+            return $offre->load([
+                'skills' => fn($q) => $q->orderBy('pivot_ordre_aff'),
+                'categorie',
+            ]);
         }, 201);
     }
 
@@ -133,7 +141,10 @@ class OffreEmploiController extends Controller
                 $offreEmploi->skills()->sync($syncData);
             }
 
-            return $offreEmploi->load(['skills' => fn($q) => $q->orderBy('pivot_ordre_aff')]);
+            return $offreEmploi->load([
+                'skills' => fn($q) => $q->orderBy('pivot_ordre_aff'),
+                'categorie',
+            ]);
         });
     }
 
@@ -157,7 +168,7 @@ class OffreEmploiController extends Controller
     {
         return $this->handleApiNoTransaction(function () {
             $userId = auth()->id();
-            return OffreEmploi::with(['skills' => fn($q) => $q->orderBy('pivot_ordre_aff')])
+            return OffreEmploi::with(['skills' => fn($q) => $q->orderBy('pivot_ordre_aff'), 'categorie'])
                               ->whereHas('employeur', fn($q) => $q->where('user_id', $userId))
                               ->paginate(10);
         });
