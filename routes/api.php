@@ -65,7 +65,7 @@ Route::prefix('categories')->group(function () {
     Route::get('/', [CategorieController::class, 'index']);
     Route::get('/{id}', [CategorieController::class, 'show']);
     Route::post('/', [CategorieController::class, 'store']);
-    Route::put('/{id}', [CategorieController::class, 'update']);   
+    Route::put('/{id}', [CategorieController::class, 'update']);
     Route::delete('/{id}', [CategorieController::class, 'destroy']);
 });
 
@@ -147,6 +147,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::middleware('auth:api')->group(function () {
         Route::post('/profile/particulier', [ParticulierProfileController::class, 'store']);
+        Route::put('/profile/particulier', [ParticulierProfileController::class, 'update']);
     });
 
     Route::middleware('auth:api')->group(function () {
