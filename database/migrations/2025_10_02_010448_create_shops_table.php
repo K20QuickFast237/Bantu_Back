@@ -11,9 +11,10 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('logo')->nullable();
+            $table->string('banner')->nullable();
             $table->text('description')->nullable();
             $table->string('location')->nullable();
-            $table->enum('status', ['pending','approved','rejected','suspended'])->default('pending');
+            $table->enum('status', ['Pending','Approved','Rejected','Suspended','Disabled'])->default('Pending');
             $table->timestamps();
         });
     }

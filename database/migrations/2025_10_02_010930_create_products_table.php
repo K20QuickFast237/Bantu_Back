@@ -16,7 +16,9 @@ return new class extends Migration {
             $table->decimal('discount_price',10,2)->nullable();
             $table->integer('stock')->default(0);
             $table->integer('low_stock_threshold')->default(5);
+            $table->enum('status', ['Active','Disabled'])->default('Active');
             $table->string('image_product')->nullable();
+            $table->boolean('is_visible')->default(true);
             $table->timestamps();
         });
     }
