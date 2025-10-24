@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('offre_emplois', function (Blueprint $table) {
             $table->foreignId('categorie_id')
                 ->nullable()
-                ->constrained('categories')
+                ->constrained('offre_categories')
                 ->onDelete('set null');
         });
     }

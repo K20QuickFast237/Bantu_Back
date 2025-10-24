@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Enums\OffreStatus;
 use App\Models\User;
 use App\Models\OffreEmploi;
 use App\Services\EmbeddingService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class MatchingController extends Controller
@@ -34,7 +36,7 @@ class MatchingController extends Controller
             'formations:id,user_id,diplome,domaine_etude',
         ]);
 
-        $skillNames = \DB::table('user_skills')
+        $skillNames = DB::table('user_skills')
             ->join('skills', 'skills.id', '=', 'user_skills.skill_id')
             ->where('user_skills.user_id', $user->id)
             ->pluck('skills.nom')
@@ -83,7 +85,7 @@ class MatchingController extends Controller
         $candidateText = $this->candidateText($user, 5); // skills ×5
         $candidateEmbedding = EmbeddingService::getEmbedding($candidateText);
 
-        $offers = OffreEmploi::all();
+        $offers = OffreEmploi::where('statut', OffreStatus::Available)->get();  //::all();
         $results = [];
 
         foreach ($offers as $offre) {

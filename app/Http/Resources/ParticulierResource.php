@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class ParticulierResource extends JsonResource
 {
@@ -24,9 +25,9 @@ class ParticulierResource extends JsonResource
             "pays" => $this->pays,
             "titre_professionnel" => $this->titre_professionnel,
             "resume_profil" => $this->resume_profil,
-            "image_profil"=> $this->image_profil ? url($this->image_profil) : $this->image_profil,
-            "cv_link" => $this->cv_link && strpos($this->cv_link, 'http') === false ? url($this->cv_link) : $this->cv_link,
-            "lettre_motivation_link" => $this->lettre_motivation_link && strpos($this->lettre_motivation_link, 'http') === false ? url($this->lettre_motivation_link) : $this->lettre_motivation_link,
+            "image_profil"=> getLinkToFile($this->image_profil), // && $this->image_profil ? url(Storage::url($this->image_profil)) : $this->image_profil,
+            "cv_link" => getLinkToFile($this->cv_link), //$this->cv_link && strpos($this->cv_link, 'http') === false ? Storage::url($this->cv_link) : $this->cv_link,
+            "lettre_motivation_link" => getLinkToFile($this->lettre_motivation_link), //$this->lettre_motivation_link && strpos($this->lettre_motivation_link, 'http') === false ? Storage::url($this->lettre_motivation_link) : $this->lettre_motivation_link,
             "is_visible" => $this->is_visible ? true : false,
         ];
         

@@ -25,7 +25,7 @@ return new class extends Migration
             $table->unsignedInteger('remuneration_max')->nullable();
             $table->date('date_publication');
             $table->date('date_limite_soumission')->nullable();
-            $table->enum('statut', ['active','en_pause','fermee','archivee'])->default('active');
+            $table->enum('statut', ['Active','En Pause','Fermee','Archivee'])->default('Active');
             $table->unsignedInteger('nombre_vues')->default(0);
             $table->timestamps();
         });

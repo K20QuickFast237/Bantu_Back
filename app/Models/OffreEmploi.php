@@ -63,8 +63,8 @@ class OffreEmploi extends Model
                     ->withTimestamps();
     }
 
-    public function categorie()
+    public function categorie(): BelongsTo
     {
-        return $this->belongsTo(Categorie::class, 'categorie_id');
+        return $this->belongsTo(OffreCategorie::class, 'categorie_id');
     }
 }

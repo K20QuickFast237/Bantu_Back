@@ -4,13 +4,13 @@ namespace App\Http\Enums;
 
 enum TypeContrat: string
 {
-    case CDI = 'cdi';
-    case CDD = 'cdd';
-    case INTERIM = 'interim';
-    case STAGE = 'stage';
-    case ALTERNANCE = 'alternance';
-    case FREELANCE = 'freelance';
-    case AUTRE = 'autre';
+    case CDI = 'CDI';
+    case CDD = 'CDD';
+    case INTERIM = 'Interim';
+    case STAGE = 'Stage';
+    case ALTERNANCE = 'Alternance';
+    case FREELANCE = 'Freelance';
+    case AUTRE = 'Autre';
 
     public static function values(): array
     {

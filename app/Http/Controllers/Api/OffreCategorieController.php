@@ -6,11 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreCategorieRequest;
 use App\Http\Requests\UpdateCategorieRequest;
-use App\Models\Categorie;
+use App\Models\OffreCategorie as Categorie;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 
-class CategorieController extends Controller
+class OffreCategorieController extends Controller
 {
     // Créer une nouvelle catégorie
     public function store(StoreCategorieRequest $request)

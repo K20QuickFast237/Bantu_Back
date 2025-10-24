@@ -54,7 +54,7 @@ class UpdateOffreEmploiRequest extends FormRequest
             'skills' => 'nullable|array',
             'skills.*' => 'exists:skills,id',
 
-            'categorie_id' => 'sometimes|exists:categories,id',
+            'categorie_id' => 'sometimes|exists:offre_categories,id',
         ];
     }
 }

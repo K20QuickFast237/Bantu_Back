@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Categorie extends Model
+class OffreCategorie extends Model
 {
     use HasFactory;
 
@@ -15,7 +16,7 @@ class Categorie extends Model
         'description',
     ];
 
-    public function offres()
+    public function offres(): HasMany
     {
         return $this->hasMany(OffreEmploi::class, 'categorie_id');
     }

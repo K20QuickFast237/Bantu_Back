@@ -168,9 +168,11 @@ class OffreEmploiController extends Controller
     {
         return $this->handleApiNoTransaction(function () {
             $userId = auth()->id();
-            return OffreEmploi::with(['skills' => fn($q) => $q->orderBy('pivot_ordre_aff'), 'categorie'])
-                              ->whereHas('employeur', fn($q) => $q->where('user_id', $userId))
-                              ->paginate(10);
+            return OffreEmploi::with([
+                  'skills' => fn($q) => $q->orderBy('pivot_ordre_aff'),
+                  'categorie' => fn ($categorie) => $categorie->chaperone()
+                ])  ->whereHas('employeur', fn($q) => $q->where('user_id', $userId))
+                    ->paginate(10);
         });
     }
 }

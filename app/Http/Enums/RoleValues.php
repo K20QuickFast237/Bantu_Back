@@ -9,6 +9,11 @@ enum RoleValues: string
     case RECRUTEUR = 'Professionnel'; //'Recruteur';
     case FREELANCEUR = 'Freelanceur';
     case VENDEUR = 'Vendeur';
+
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
 }
 
 
