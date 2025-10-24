@@ -9,6 +9,7 @@ use App\Http\Requests\Api\CreateUserRequest;
 use App\Http\Requests\Api\LoginRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,24 +23,29 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    public function register(CreateUserRequest $request): JsonResponse
-    {
-        $data = $request->validated();
-        $data['password'] = Hash::make($data['password']);
+public function register(CreateUserRequest $request): JsonResponse
+{
+    $data = $request->validated();
+    $data['password'] = Hash::make($data['password']);
 
-        $user = User::query()->create($data);
-        event(new Registered($user));
+    // Créer l'utilisateur
+    $user = User::query()->create($data);
 
-        $hash = sha1($user->email);
-        $signedUrl = URL::signedRoute('verification.verify', ['id' => $user->id, 'hash' => $hash]);
-        $signature = explode('?signature=', $signedUrl)[1];
-
-        return response()->json([
-            'message' => 'User successfully registered, Check your mail to verify your account.',
-            'token' => $user->id . '/' . $hash,
-            'signature' => $signature
-        ], 201);
+    // Ajouter le rôle actif dans le pivot si role_actif est fourni
+    if (!empty($data['role_actif'])) {
+        $role = Role::where('name', $data['role_actif'])->first();
+        if ($role) {
+            $user->roles()->attach($role->id, ['isCurrent' => true]);
+        }
     }
+
+    // Déclencher l'événement de vérification d'email
+    event(new Registered($user));
+
+    return response()->json([
+        'message' => 'User successfully registered, Check your mail to verify your account.'
+    ], 201);
+}
 
     public function login(LoginRequest $request): JsonResponse
     {

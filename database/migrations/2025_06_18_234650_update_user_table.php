@@ -18,7 +18,7 @@ return new class extends Migration
 
             $table->after('remember_token', function (Blueprint $table) {
                 $table->string('photo_profil')->nullable();
-                $table->string('role_actif')->default('Particulier')->nullable();
+                $table->string('role_actif')->nullable();  //->default('Particulier')->nullable();
                 $table->boolean('is_active')->default(true);
                 $table->dateTime('last_login')->nullable();
                 $table->foreign('role_actif')->references('name')->on('roles')->onDelete('cascade');

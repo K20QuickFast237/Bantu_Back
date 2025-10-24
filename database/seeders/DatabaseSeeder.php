@@ -29,6 +29,10 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call(RolesSeeder::class); // ✅ doit être en tout début
+        
+        $this->call([
+        DeliveryMethodsTableSeeder::class,
+    ]);
 
 
         // 1️⃣ Créer des users
