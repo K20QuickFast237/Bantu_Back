@@ -3,7 +3,8 @@
 use Illuminate\Support\Facades\Storage;
 
 
-function getLinkToFile(?string $filePath): ?string {
+function getLinkToFile(?string $filePath): ?string 
+{
     if (! $filePath) {
         return null;
     }
