@@ -170,7 +170,7 @@ class OffreEmploiController extends Controller
             $userId = auth()->id();
             return OffreEmploi::with([
                   'skills' => fn($q) => $q->orderBy('pivot_ordre_aff'),
-                  'categorie' => fn ($categorie) => $categorie->chaperone()
+                  'categorie'
                 ])  ->whereHas('employeur', fn($q) => $q->where('user_id', $userId))
                     ->paginate(10);
         });
