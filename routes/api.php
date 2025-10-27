@@ -65,7 +65,7 @@ Route::middleware('auth:api')->prefix('favoris')->group(function () {
 });
 
 // Routes pour gérer les categories (des offres)
-Route::prefix('categories')->group(function () {
+Route::prefix('offres-categories')->group(function () {
     Route::get('/', [OffreCategorieController::class, 'index']);
     Route::get('/{id}', [OffreCategorieController::class, 'show']);
     Route::post('/', [OffreCategorieController::class, 'store']);
@@ -123,6 +123,7 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
+Route::get('login', fn() => response()->json(['message' => 'Unauthanticated.'], 401))->name('login');
 Route::post('forgot-password', [AuthController::class, 'ResetPasswordNotif'])->middleware('guest')->name('password.email');
 // Route::get('/reset-password/{token}', function (string $token) {
 //     // return response()->json(['token' => $token]);
