@@ -24,4 +24,4 @@ jobs:
           username: ${{ secrets.PROD_USERNAME }}
           port: ${{ secrets.PROD_PORT }}
           key: ${{ secrets.PROD_SSHKEY }}
-          script: "cd /var/www/html/test_bantu && ./.scripts/deploy.sh"
+          script: "cd /var/www/bantulink/bantuhire/back && ./.scripts/deploy.sh"
