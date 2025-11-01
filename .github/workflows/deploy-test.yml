@@ -20,8 +20,8 @@ jobs:
       - name: Deploy to server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          port: ${{ secrets.PORT }}
-          key: ${{ secrets.SSHKEY }}
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USERNAME }}
+          port: ${{ secrets.PROD_PORT }}
+          key: ${{ secrets.PROD_SSHKEY }}
           script: "cd /var/www/html/test_bantu && ./.scripts/deploy.sh"
