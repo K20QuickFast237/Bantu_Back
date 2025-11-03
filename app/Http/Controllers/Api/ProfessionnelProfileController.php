@@ -47,8 +47,6 @@ class ProfessionnelProfileController extends Controller
 
         $data = $request->validated();
 
-        // dd($data);
-
         if ($request->hasFile('logo')) {
             if ($professionnel->logo && Storage::disk('public')->exists($professionnel->logo)) {
                 Storage::disk('public')->delete($professionnel->logo);

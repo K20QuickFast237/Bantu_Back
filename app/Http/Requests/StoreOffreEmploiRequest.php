@@ -29,6 +29,7 @@ class StoreOffreEmploiRequest extends FormRequest
             'description_poste' => 'required|string',
             'exigences' => 'nullable|string',
             'responsabilites' => 'nullable|string',
+            'experience_requise' => 'required|in:<1an,1-3ans,4-5ans,>5ans',
             'ville' => 'required|string|max:255',
             'pays' => 'required|string|max:255',
             'type_contrat' => 'required|in:cdi,cdd,interim,stage,alternance,freelance,autre',

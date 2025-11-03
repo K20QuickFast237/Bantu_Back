@@ -19,6 +19,7 @@ class OffreEmploi extends Model
         'description_poste',
         'exigences',
         'responsabilites',
+        'experience_requise',
         'ville',
         'pays',
         'type_contrat',
