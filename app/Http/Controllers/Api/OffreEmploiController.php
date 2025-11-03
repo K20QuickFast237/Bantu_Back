@@ -175,4 +175,24 @@ class OffreEmploiController extends Controller
                     ->paginate(10);
         });
     }
+
+    /**
+     * Catégories d'offres populaires (celles avec le plus de candidatures trie par ordre descroissant)
+     */
+    public function categoriesPopulaires(): JsonResponse
+    {
+        return $this->handleApiNoTransaction(function () {
+            $categories = Categorie::select('categories.id', 'categories.nom')
+                ->join('offre_emplois', 'offre_emplois.categorie_id', '=', 'categories.id')
+                ->join('candidatures', 'candidatures.offre_emploi_id', '=', 'offre_emplois.id')
+                ->where('offre_emplois.statut', 'active') // uniquement les offres actives
+                ->groupBy('categories.id', 'categories.nom')
+                ->selectRaw('COUNT(candidatures.id) as total_candidatures')
+                ->orderByDesc('total_candidatures')
+                ->get();
+
+            return $categories;
+        });
+    }
+
 }

@@ -54,6 +54,7 @@ Route::prefix('newsletter')->group(function () {
 
 //Route pour les types de contrat
 Route::get('/types-contrat', [MetadataController::class, 'typesContrat']);
+Route::get('/offres/categories-populaires', [OffreEmploiController::class, 'categoriesPopulaires']);
 
 //Route pour la liste des entreprises ayant des offres en cours ou ayant au moins une offfre
 Route::prefix('entreprises')->group(function () {
@@ -178,6 +179,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/offres', [OffreEmploiController::class, 'index']);
     Route::get('/offres/{offreEmploi}', [OffreEmploiController::class, 'show']);
 
+
     // Routes protégées (recruteurs connectés)
     Route::middleware('auth:api')->group(function () {
         Route::get('/mesoffres', [OffreEmploiController::class, 'mesOffres']);
@@ -185,6 +187,7 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/offres/{offreEmploi}', [OffreEmploiController::class, 'update']);
         Route::delete('/offres/{offreEmploi}', [OffreEmploiController::class, 'destroy']);
     });
+
 
     Route::middleware('auth:api')->group(function () {
 
