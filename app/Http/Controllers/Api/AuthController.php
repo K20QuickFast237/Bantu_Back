@@ -23,29 +23,29 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-public function register(CreateUserRequest $request): JsonResponse
-{
-    $data = $request->validated();
-    $data['password'] = Hash::make($data['password']);
+    public function register(CreateUserRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $data['password'] = Hash::make($data['password']);
 
-    // Créer l'utilisateur
-    $user = User::query()->create($data);
+        // Créer l'utilisateur
+        $user = User::query()->create($data);
 
-    // Ajouter le rôle actif dans le pivot si role_actif est fourni
-    if (!empty($data['role_actif'])) {
-        $role = Role::where('name', $data['role_actif'])->first();
-        if ($role) {
-            $user->roles()->attach($role->id, ['isCurrent' => true]);
+        // Ajouter le rôle actif dans le pivot si role_actif est fourni
+        if (!empty($data['role_actif'])) {
+            $role = Role::where('name', $data['role_actif'])->first();
+            if ($role) {
+                $user->roles()->attach($role->id, ['isCurrent' => true]);
+            }
         }
+
+        // Déclencher l'événement de vérification d'email
+        event(new Registered($user));
+
+        return response()->json([
+            'message' => 'User successfully registered, Check your mail to verify your account.'
+        ], 201);
     }
-
-    // Déclencher l'événement de vérification d'email
-    event(new Registered($user));
-
-    return response()->json([
-        'message' => 'User successfully registered, Check your mail to verify your account.'
-    ], 201);
-}
 
     public function login(LoginRequest $request): JsonResponse
     {

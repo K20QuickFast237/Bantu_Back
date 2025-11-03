@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
+use App\Jobs\SendMessage;
 use Illuminate\Http\Request;
 use App\Models\Message;
 use App\Models\MessageAttachment;
@@ -66,7 +68,8 @@ class MessageController extends Controller
             ]);
 
             // Émettre l'événement après l'enregistrement complet du message
-            event(new \App\Events\MessageSent($message));
+            // event(new \App\Events\MessageSent($message));
+            SendMessage::dispatch($message);
 
             // Retourner le message avec ses attachments
             return response()->json($message->load('attachments'));
@@ -96,7 +99,7 @@ class MessageController extends Controller
         return response()->json(['status' => 'read']);
     }
 
-    // Modifier un message (max 30 min après envoi)
+    // Modifier un message (max 10 min après envoi)
     public function update(Request $request, Message $message)
     {
         if ($message->sender_id !== auth()->id()) {

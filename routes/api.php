@@ -29,7 +29,11 @@ use Illuminate\Http\Request;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Broadcast;
 use Laravel\Socialite\Facades\Socialite;
+
+// Broadcast::routes(['middleware' => ['auth:api']]);
+Broadcast::routes(['middleware' => ['auth:api']]); //->middleware('auth:api');
 
 Route::middleware('auth:api')->prefix('user')->group(function () {
     Route::get('/{user}', fn(User $user) => response()->json(new UserResource($user)))->middleware('verified'); // Verified to ensure the user's email is verified

@@ -8,7 +8,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 }); // ->purpose('Display an inspiring quote')
 
-Schedule::command ("auth:clear-resets")->daily();   // ->purpose("Clear expired password resets")
+Schedule::command("auth:clear-resets")->daily();   // ->purpose("Clear expired password resets")
 Schedule::command("passport:purge")->daily();       // ->purpose('Purge expired tokens')
 
 /*

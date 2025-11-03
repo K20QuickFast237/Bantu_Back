@@ -111,6 +111,8 @@ class CandidatureController extends Controller
             }
 
             return $candidature->load(['offre.skills']);
+
+            // Ouvrir la conversation et notifier par email
         }, 201);
     }
 
