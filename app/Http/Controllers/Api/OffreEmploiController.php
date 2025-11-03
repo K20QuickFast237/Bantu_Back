@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateOffreEmploiRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\OffreEmploi;
 use App\Models\Categorie;
+use App\Models\Category;
 use App\Traits\ApiResponseHandler;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
@@ -182,10 +183,10 @@ class OffreEmploiController extends Controller
     public function categoriesPopulaires(): JsonResponse
     {
         return $this->handleApiNoTransaction(function () {
-            $categories = Categorie::select('categories.id', 'categories.nom')
+            $categories = Category::select('categories.id', 'categories.nom')
                 ->join('offre_emplois', 'offre_emplois.categorie_id', '=', 'categories.id')
-                ->join('candidatures', 'candidatures.offre_emploi_id', '=', 'offre_emplois.id')
-                ->where('offre_emplois.statut', 'active') // uniquement les offres actives
+                ->join('candidatures', 'candidatures.offre_id', '=', 'offre_emplois.id')
+                ->where('offre_emplois.statut', 'active')
                 ->groupBy('categories.id', 'categories.nom')
                 ->selectRaw('COUNT(candidatures.id) as total_candidatures')
                 ->orderByDesc('total_candidatures')
