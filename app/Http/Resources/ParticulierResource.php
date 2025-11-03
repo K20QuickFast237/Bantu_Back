@@ -28,6 +28,8 @@ class ParticulierResource extends JsonResource
             "image_profil"=> getLinkToFile($this->image_profil), // && $this->image_profil ? url(Storage::url($this->image_profil)) : $this->image_profil,
             "cv_link" => getLinkToFile($this->cv_link), //$this->cv_link && strpos($this->cv_link, 'http') === false ? Storage::url($this->cv_link) : $this->cv_link,
             "lettre_motivation_link" => getLinkToFile($this->lettre_motivation_link), //$this->lettre_motivation_link && strpos($this->lettre_motivation_link, 'http') === false ? Storage::url($this->lettre_motivation_link) : $this->lettre_motivation_link,
+            "portfolio_link" => getLinkToFile($this->portfolio_link),
+            "ressources" => $this->ressources,
             "is_visible" => $this->is_visible ? true : false,
         ];
         
