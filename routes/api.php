@@ -156,6 +156,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::middleware('auth:api')->group(function () {
         Route::post('/profile/professionnel', [ProfessionnelProfileController::class, 'store']);
+        Route::put('/profile/professionnel/{professionnel}', [ProfessionnelProfileController::class, 'update']);
     });
 
     Route::middleware('auth:api')->group(function () {
