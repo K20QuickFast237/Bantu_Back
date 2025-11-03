@@ -20,8 +20,25 @@ class ParticulierProfileController extends Controller
         $data = $request->validated();
         $data['user_id'] = $user->id;
 
-        if ($request->hasFile('image_profil')) {
-            $data['image_profil'] = $request->file('image_profil')->store('images/profils', 'public');
+        if ($request->hasFile('image_profil_file')) {
+            $data['image_profil'] = $request->file('image_profil_file')->store('images/profils', 'public');
+        }
+        if ($request->has('image_profil_link')) {
+            $data['image_profil'] = $request->input('image_profil_link');
+        }
+
+        if ($request->hasFile('cv_file')) {
+            $data['cv_link'] = $request->file('cv_file')->store('cvs', 'public');
+        }
+        if ($request->has('cv_link')) {
+            $data['cv_link'] = $request->input('cv_link');
+        }
+
+        if ($request->hasFile('lettre_motivation_file')) {
+            $data['lettre_motivation_link'] = $request->file('lettre_motivation_file')->store('motivations', 'public');
+        }
+        if ($request->has('lettre_motivation_link')) {
+            $data['lettre_motivation_link'] = $request->input('lettre_motivation_link');
         }
 
         $particulier = Particulier::create($data);

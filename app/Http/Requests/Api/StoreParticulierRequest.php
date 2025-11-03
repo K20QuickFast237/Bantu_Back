@@ -22,17 +22,22 @@ class StoreParticulierRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'date_naissance' => 'required|date',
+            'date_naissance' => 'sometimes|required|date',
             'telephone' => 'required|digits_between:8,15',
             'adresse' => 'required|string|max:255',
             'ville' => 'required|string|max:100',
             'pays' => 'required|string|max:100',
-            'titre_professionnel' => 'required|string|max:255',
-            'resume_profil' => 'required|string',
-            'image_profil' => 'nullable|image|max:2048',
-            'cv_link' => 'nullable|url',
-            'lettre_motivation_link' => 'nullable|url',
+            'titre_professionnel' => 'sometimes|required|string|max:255',
+            'resume_profil' => 'sometimes|required|string',
+            'image_profil_file' => 'sometimes|required|image|max:2048',
+            'image_profil_link' => 'sometimes|required|exclude_with:image_profil_file|url',
+            'cv_file' => 'sometimes|required|file|mimes:pdf,doc,docx|max:2048',
+            'cv_link' => 'sometimes|required|exclude_with:cv_file|url',
+            'lettre_motivation_file' => 'sometimes|nullable|file|mimes:pdf,doc,docx|max:2048',
+            'lettre_motivation_link' => 'sometimes|nullable|exclude_with:lettre_motivation_file|url',
             'is_visible' => 'boolean',
+            'portfolio' => 'sometimes|required|url',
+            'ressources' => 'sometimes|required|json',
         ];
     }
 }
