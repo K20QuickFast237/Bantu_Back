@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('portfolio_link')->nullable();
             $table->string('ressources_link')->nullable();
             $table->boolean('is_visible')->default(true);
+            $table->unique('user_id');
             $table->timestamps();
         });
     }

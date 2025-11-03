@@ -7,9 +7,11 @@ use App\Http\Enums\RoleValues;
 use Illuminate\Http\Request;
 use App\Http\Requests\Api\StoreParticulierRequest;
 use App\Http\Requests\Api\UpdateParticulierRequest;
+use App\Http\Resources\ParticulierResource;
 use App\Models\Particulier;
 use App\Models\Role;
 use Illuminate\Support\Facades\Auth;
+use \Illuminate\Database\UniqueConstraintViolationException;
 
 class ParticulierProfileController extends Controller
 {
@@ -19,29 +21,15 @@ class ParticulierProfileController extends Controller
 
         $data = $request->validated();
         $data['user_id'] = $user->id;
+        $this->extractParticulierData($request, $data);
 
-        if ($request->hasFile('image_profil_file')) {
-            $data['image_profil'] = $request->file('image_profil_file')->store('images/profils', 'public');
+        try {
+            $particulier = Particulier::create($data);
+        } catch (UniqueConstraintViolationException $th) {
+            return response()->json([
+                'message' => 'Un profil particulier existe déjà pour cet utilisateur.'
+            ], 409);
         }
-        if ($request->has('image_profil_link')) {
-            $data['image_profil'] = $request->input('image_profil_link');
-        }
-
-        if ($request->hasFile('cv_file')) {
-            $data['cv_link'] = $request->file('cv_file')->store('cvs', 'public');
-        }
-        if ($request->has('cv_link')) {
-            $data['cv_link'] = $request->input('cv_link');
-        }
-
-        if ($request->hasFile('lettre_motivation_file')) {
-            $data['lettre_motivation_link'] = $request->file('lettre_motivation_file')->store('motivations', 'public');
-        }
-        if ($request->has('lettre_motivation_link')) {
-            $data['lettre_motivation_link'] = $request->input('lettre_motivation_link');
-        }
-
-        $particulier = Particulier::create($data);
 
         if ($user->rolerole_actif !== RoleValues::RECRUTEUR) {
             $user->update(['role_actif' => RoleValues::CANDIDAT]);
@@ -49,7 +37,7 @@ class ParticulierProfileController extends Controller
 
         return response()->json([
             'message' => "Profil complété avec succès",
-            'data' => $particulier,
+            'data' => new ParticulierResource($particulier),
         ], 201);
     }
 
@@ -64,16 +52,42 @@ class ParticulierProfileController extends Controller
 
         $data = $request->validated();
 
-        if ($request->hasFile('image_profil')) {
-            $data['image_profil'] = $request->file('image_profil')->store('images/profils', 'public');
-        }
+        $this->extractParticulierData($request, $data);
 
         $particulier->update($data);
 
         return response()->json([
             'message' => 'Profil mis à jour avec succès.',
-            'data' => $particulier,
+            'data' => new ParticulierResource($particulier),
         ]);
+    }
+
+    private function extractParticulierData(Request $request, array &$data)
+    {
+        if ($request->hasFile('image_profil_file')) {
+            $data['image_profil'] = $request->file('image_profil_file')->store('images/profils', 'public');
+            unset($data['image_profil_file']);
+        }
+        if ($request->has('image_profil_link')) {
+            $data['image_profil'] = $request->input('image_profil_link');
+            unset($data['image_profil_link']);
+        }
+
+        if ($request->hasFile('cv_file')) {
+            $data['cv_link'] = $request->file('cv_file')->store('cvs', 'public');
+            unset($data['cv_file']);
+        }
+        if ($request->has('cv_link')) {
+            $data['cv_link'] = $request->input('cv_link');
+        }
+
+        if ($request->hasFile('lettre_motivation_file')) {
+            $data['lettre_motivation_link'] = $request->file('lettre_motivation_file')->store('motivations', 'public');
+            unset($data['lettre_motivation_file']);
+        }
+        if ($request->has('lettre_motivation_link')) {
+            $data['lettre_motivation_link'] = $request->input('lettre_motivation_link');
+        }
     }
 
 }
