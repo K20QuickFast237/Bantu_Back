@@ -35,4 +35,9 @@ class Particulier extends Model
     {
         return $this->hasMany(Candidature::class);
     }
+
+    public function cvs()
+    {
+        return $this->hasMany(Cv::class);
+    }
 }

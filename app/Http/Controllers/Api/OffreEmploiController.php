@@ -69,6 +69,9 @@ class OffreEmploiController extends Controller
      */
     public function show(OffreEmploi $offreEmploi): JsonResponse
     {
+        // Incrémenter le compteur de vues
+        $offreEmploi->increment('nombre_vues');
+        
         return $this->handleApiNoTransaction(fn() =>
             $offreEmploi
                 ->loadCount('candidatures')

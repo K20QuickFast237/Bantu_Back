@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\API\TagController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\DeliveryMethodController;
+use App\Http\Controllers\Api\CvController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -67,6 +68,14 @@ Route::middleware('auth:api')->prefix('favoris')->group(function () {
     Route::post('/ajouter', [FavoriController::class, 'add']);
     Route::post('/retirer', [FavoriController::class, 'remove']);
     Route::get('/', [FavoriController::class, 'list']);
+});
+
+//Routes pour gérer les CVs
+Route::middleware('auth:api')->group(function () {
+    Route::get('/cvs', [CvController::class, 'index']);
+    Route::post('/cvs', [CvController::class, 'store']);
+    Route::put('/cvs/{cv}', [CvController::class, 'update']);
+    Route::delete('/cvs/{cv}', [CvController::class, 'destroy']);
 });
 
 // Routes pour gérer les categories (des offres)
