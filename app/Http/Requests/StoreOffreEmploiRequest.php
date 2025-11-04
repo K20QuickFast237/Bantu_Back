@@ -28,6 +28,7 @@ class StoreOffreEmploiRequest extends FormRequest
             'description_poste' => 'required|string',
             'exigences' => 'nullable|string',
             'responsabilites' => 'nullable|string',
+            'experience_requise' => 'nullable|required|string|in:<1an,1-3ans,4-5ans,>5ans',
             'ville' => 'required|string|max:255',
             'pays' => 'required|string|max:255',
             'type_contrat' => 'required|in:cdi,cdd,interim,stage,alternance,freelance,autre',
@@ -42,7 +43,7 @@ class StoreOffreEmploiRequest extends FormRequest
             'email_candidature' => 'required|email|max:255',
             'url_candidature' => 'nullable|url|max:255',
             'instructions_candidature' => 'nullable|string',
-            'experience_requise' => 'nullable|required|string',
+            // 'experience_requise' => 'nullable|required|string',
             'documents_requis' => 'nullable|array',
             'documents_requis.*' => 'string|max:255',
 

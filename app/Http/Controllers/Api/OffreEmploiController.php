@@ -9,7 +9,7 @@ use App\Http\Requests\StoreOffreEmploiRequest;
 use App\Http\Requests\UpdateOffreEmploiRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\OffreEmploi;
-use App\Models\Categorie;
+use App\Models\OffreCategorie;
 use App\Traits\ApiResponseHandler;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
@@ -19,14 +19,48 @@ class OffreEmploiController extends Controller
     use ApiResponseHandler, AuthorizesRequests;
 
     /**
-     * Liste toutes les offres pour les candidats (public)
+     * Liste toutes les offres pour les candidats et marque si deja candidaté ou en favoris pour chaque candidat (public)
      */
     public function index(): JsonResponse
     {
         return $this->handleApiNoTransaction(function () {
-            return OffreEmploi::with(['skills' => fn($q) => $q->orderBy('pivot_ordre_aff'), 'employeur', 'categorie'])
-                              ->where('statut', 'active')
-                              ->paginate(10);
+            $user = auth()->user();
+            $particulier = $user->particulier;
+
+            // Récupérer tous les IDs des offres favorites et déjà candidaturées
+            $favorisIds = $user->favoris()->pluck('offre_emploi_id')->toArray();
+            $candidaturesIds = $particulier->candidatures()->pluck('offre_id')->toArray();
+
+            // Récupérer les offres actives avec relations
+            $offres = OffreEmploi::with([
+                            'skills' => fn($q) => $q->orderBy('pivot_ordre_aff'),
+                            'employeur',
+                            'categorie'
+                        ])
+                        ->where('statut', 'active')
+                        ->get();
+
+            // Ajouter les flags directement
+            $offres->transform(function ($offre) use ($favorisIds, $candidaturesIds) {
+                $offre->is_favoris = in_array($offre->id, $favorisIds);
+                $offre->deja_candidature = in_array($offre->id, $candidaturesIds);
+                return $offre;
+            });
+
+            return $offres;
+            // $userId = auth()->id();
+
+            // $offres = OffreEmploi::with(['skills' => fn($q) => $q->orderBy('pivot_ordre_aff'), 'employeur', 'categorie'])
+            //                   ->where('statut', 'active')
+            //                   ->get();
+
+            // $offres = $offres->map(function ($offre) use ($userId) {
+            //     $offre->is_favoris = $offre->favoris()->where('user_id', $userId)->exists();
+            //     $offre->deja_candidature = $offre->candidatures()->where('user_id', $userId)->exists();
+            //     return $offre;
+            // });
+
+            // return $offres;
         });
     }
 
@@ -35,12 +69,17 @@ class OffreEmploiController extends Controller
      */
     public function show(OffreEmploi $offreEmploi): JsonResponse
     {
+        // Incrémenter le compteur de vues
+        $offreEmploi->increment('nombre_vues');
+        
         return $this->handleApiNoTransaction(fn() =>
-            $offreEmploi->load([
-                'skills' => fn($q) => $q->orderBy('pivot_ordre_aff'),
-                'employeur',
-                'categorie',
-            ])
+            $offreEmploi
+                ->loadCount('candidatures')
+                ->load([
+                    'skills' => fn($q) => $q->orderBy('pivot_ordre_aff'),
+                    'employeur',
+                    'categorie',
+                ])
         );
     }
 
@@ -180,9 +219,28 @@ class OffreEmploiController extends Controller
     {
         return response()->json([
             'junior' => '<1an',
-            'intermediaire' => 'de 1 à 3ans',
-            'senior' => 'de 4 à 5ans',
+            'intermediaire' => '1-3ans',
+            'senior' => '4-5ans',
             'expert' => '>5ans',
         ]);
     }
+    /**
+     * Catégories d'offres populaires (celles avec le plus de candidatures trie par ordre descroissant)
+     */
+    public function categoriesPopulaires(): JsonResponse
+    {
+        return $this->handleApiNoTransaction(function () {
+            $categories = OffreCategorie::select('offre_categories.id', 'offre_categories.nom')
+                ->join('offre_emplois', 'offre_emplois.categorie_id', '=', 'offre_categories.id')
+                ->join('candidatures', 'candidatures.offre_id', '=', 'offre_emplois.id')
+                ->where('offre_emplois.statut', 'active')
+                ->groupBy('offre_categories.id', 'offre_categories.nom')
+                ->selectRaw('COUNT(candidatures.id) as total_candidatures')
+                ->orderByDesc('total_candidatures')
+                ->get();
+
+            return $categories;
+        });
+    }
+
 }

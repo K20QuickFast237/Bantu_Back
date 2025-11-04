@@ -18,6 +18,7 @@ class Professionnel extends Model
         'description_entreprise',
         'site_web',
         'logo',
+        'photo_couverture',
         'adresse',
         'ville',
         'pays',

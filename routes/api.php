@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\API\TagController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\DeliveryMethodController;
+use App\Http\Controllers\Api\CvController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -54,6 +55,7 @@ Route::prefix('newsletter')->group(function () {
 
 //Route pour les types de contrat
 Route::get('/types-contrat', [MetadataController::class, 'typesContrat']);
+Route::get('/offres/categories-populaires', [OffreEmploiController::class, 'categoriesPopulaires']);
 
 //Route pour la liste des entreprises ayant des offres en cours ou ayant au moins une offfre
 Route::prefix('entreprises')->group(function () {
@@ -66,6 +68,14 @@ Route::middleware('auth:api')->prefix('favoris')->group(function () {
     Route::post('/ajouter', [FavoriController::class, 'add']);
     Route::post('/retirer', [FavoriController::class, 'remove']);
     Route::get('/', [FavoriController::class, 'list']);
+});
+
+//Routes pour gérer les CVs
+Route::middleware('auth:api')->group(function () {
+    Route::get('/cvs', [CvController::class, 'index']);
+    Route::post('/cvs', [CvController::class, 'store']);
+    Route::put('/cvs/{cv}', [CvController::class, 'update']);
+    Route::delete('/cvs/{cv}', [CvController::class, 'destroy']);
 });
 
 // Routes pour gérer les categories (des offres)
@@ -155,6 +165,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::middleware('auth:api')->group(function () {
         Route::post('/profile/professionnel', [ProfessionnelProfileController::class, 'store']);
+        Route::put('/profile/professionnel/{professionnel}', [ProfessionnelProfileController::class, 'update']);
     });
 
     Route::middleware('auth:api')->group(function () {
@@ -179,6 +190,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/offres/niveaux', [OffreEmploiController::class, 'listNiveauExperience']);
     Route::get('/offres/{offreEmploi}', [OffreEmploiController::class, 'show']);
 
+
     // Routes protégées (recruteurs connectés)
     Route::middleware('auth:api')->group(function () {
         Route::get('/mesoffres', [OffreEmploiController::class, 'mesOffres']);
@@ -186,6 +198,7 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/offres/{offreEmploi}', [OffreEmploiController::class, 'update']);
         Route::delete('/offres/{offreEmploi}', [OffreEmploiController::class, 'destroy']);
     });
+
 
     Route::middleware('auth:api')->group(function () {
 
