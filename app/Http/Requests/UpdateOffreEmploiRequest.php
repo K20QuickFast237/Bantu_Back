@@ -29,6 +29,7 @@ class UpdateOffreEmploiRequest extends FormRequest
             'description_poste' => 'sometimes|string',
             'exigences' => 'nullable|string',
             'responsabilites' => 'nullable|string',
+            'experience_requise' => 'nullable|in:<1an,1-3ans,4-5ans,>5ans',
             'ville' => 'sometimes|string|max:255',
             'pays' => 'sometimes|string|max:255',
             'type_contrat' => 'sometimes|in:cdi,cdd,interim,stage,alternance,freelance,autre',

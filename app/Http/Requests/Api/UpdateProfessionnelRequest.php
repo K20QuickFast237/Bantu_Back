@@ -4,7 +4,7 @@ namespace App\Http\Requests\Api;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreProfessionnelRequest extends FormRequest
+class UpdateProfessionnelRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,16 +23,16 @@ class StoreProfessionnelRequest extends FormRequest
     {
         return [
             'titre_professionnel' => 'nullable|string|max:255',
-            'email_pro' => 'required|email|unique:professionnels,email_pro',
-            'telephone_pro' => 'required|digits_between:8,15',
-            'nom_entreprise' => 'required|string|max:255',
-            'description_entreprise' => 'required|string',
+            'email_pro' => 'sometimes|email|unique:professionnels,email_pro,' . $this->professionnel?->id,
+            'telephone_pro' => 'sometimes|digits_between:8,15',
+            'nom_entreprise' => 'sometimes|string|max:255',
+            'description_entreprise' => 'sometimes|string',
             'site_web' => 'nullable|url',
             'logo' => 'nullable|image|max:2048',
             'photo_couverture' => 'nullable|image|max:4096',
-            'adresse' => 'required|string|max:255',
-            'ville' => 'required|string|max:100',
-            'pays' => 'required|string|max:100',
+            'adresse' => 'sometimes|string|max:255',
+            'ville' => 'sometimes|string|max:100',
+            'pays' => 'sometimes|string|max:100',
             'num_contribuable' => 'nullable|string|max:100',
         ];
     }
