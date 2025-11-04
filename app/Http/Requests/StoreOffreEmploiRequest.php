@@ -24,7 +24,6 @@ class StoreOffreEmploiRequest extends FormRequest
         return [
             // Étape 2 : infos principales
             'titre_poste' => 'required|string|max:255',
-            'fonction' => 'nullable|string|max:255',
             'lieu_travail' => 'nullable|string|max:255',
             'description_poste' => 'required|string',
             'exigences' => 'nullable|string',
@@ -43,6 +42,7 @@ class StoreOffreEmploiRequest extends FormRequest
             'email_candidature' => 'required|email|max:255',
             'url_candidature' => 'nullable|url|max:255',
             'instructions_candidature' => 'nullable|string',
+            'experience_requise' => 'nullable|required|string',
             'documents_requis' => 'nullable|array',
             'documents_requis.*' => 'string|max:255',
 

@@ -80,18 +80,27 @@ class CandidatureController extends Controller
             $data['particulier_id'] = $particulier->id;
 
             // Upload fichiers
-            if ($request->hasFile('cv_url')) {
-                $data['cv_url'] = $request->file('cv_url')->store('cvs', 'public');
+            if ($request->hasFile('cv_file')) {
+                $data['cv_url'] = $request->file('cv_file')->store('cvs', 'public');
             }
-            if ($request->hasFile('motivation_url')) {
-                $data['motivation_url'] = $request->file('motivation_url')->store('motivations', 'public');
+            if ($request->hasFile('motivation_file')) {
+                $data['motivation_url'] = $request->file('motivation_file')->store('motivations', 'public');
             }
 
             // Gestion des autres documents
             $autresDocs = [];
-            if ($request->hasFile('autres_documents')) {
-                foreach ($request->file('autres_documents') as $key => $file) {
-                    $autresDocs[$key] = $file->store('autres_documents', 'public');
+            // if ($request->hasFile('autres_documents')) {
+            //     foreach ($request->file('autres_documents') as $key => $file) {
+            //         $autresDocs[$key] = $file->store('autres_documents', 'public');
+            //     }
+            // }
+            foreach ($data as $key => $doc) {
+                if (str_contains($key, 'doc_titre')) {
+                    $order = (int)$key[strlen($key) - 1];
+                    if ($request->hasFile('doc' . $order)) {
+                        $autresDocs[$data[$key]] = $request->file('doc' . $order)->store('candidatures/docs', 'public');
+                    }
+                    unset($data[$key]);
                 }
             }
 
@@ -113,6 +122,7 @@ class CandidatureController extends Controller
             return $candidature->load(['offre.skills']);
 
             // Ouvrir la conversation et notifier par email
+            
         }, 201);
     }
 

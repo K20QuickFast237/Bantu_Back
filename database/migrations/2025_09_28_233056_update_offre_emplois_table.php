@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('url_candidature')->nullable()->after('email_candidature');
             $table->text('instructions_candidature')->nullable()->after('url_candidature');
             $table->json('documents_requis')->nullable()->after('instructions_candidature');
+            $table->string('experience_requise')->default('<1an');
         });
     }
 
@@ -33,13 +34,13 @@ return new class extends Migration
     {
         Schema::table('offre_emplois', function (Blueprint $table) {
             $table->dropColumn([
-                'fonction',
                 'lieu_travail',
                 'document_annonce',
                 'email_candidature',
                 'url_candidature',
                 'instructions_candidature',
                 'documents_requis',
+                'experience_requise',
             ]);
         });
     }

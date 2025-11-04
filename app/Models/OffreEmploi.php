@@ -28,13 +28,13 @@ class OffreEmploi extends Model
         'date_limite_soumission',
         'statut',
         'nombre_vues',
-        'fonction',
         'lieu_travail',
         'document_annonce',
         'email_candidature',
         'url_candidature',
         'instructions_candidature',
         'documents_requis',
+        'experience_requise',
     ];
 
 

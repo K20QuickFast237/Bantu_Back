@@ -176,6 +176,7 @@ Route::middleware('auth:api')->group(function () {
 
     // Routes publiques
     Route::get('/offres', [OffreEmploiController::class, 'index']);
+    Route::get('/offres/niveaux', [OffreEmploiController::class, 'listNiveauExperience']);
     Route::get('/offres/{offreEmploi}', [OffreEmploiController::class, 'show']);
 
     // Routes protégées (recruteurs connectés)

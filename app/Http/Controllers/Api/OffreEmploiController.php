@@ -175,4 +175,14 @@ class OffreEmploiController extends Controller
                     ->paginate(10);
         });
     }
+
+    public function listNiveauExperience(): JsonResponse
+    {
+        return response()->json([
+            'junior' => '<1an',
+            'intermediaire' => 'de 1 à 3ans',
+            'senior' => 'de 4 à 5ans',
+            'expert' => '>5ans',
+        ]);
+    }
 }
