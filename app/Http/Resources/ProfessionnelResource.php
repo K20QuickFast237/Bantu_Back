@@ -14,27 +14,36 @@ class ProfessionnelResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // $data = parent::toArray($request);
-        $professionnel = [
-            'id' => $this->id,
-            "user_id" => $this->user_id,
-            "titre_professionnel" => $this->titre_professionnel,
-            "email_pro" => $this->email_pro,
-            "telephone_pro" => $this->telephone_pro,
-            "nom_entreprise" => $this->nom_entreprise,
-            "description_entreprise" => $this->description_entreprise,
-            "site_web" => getLinkToFile($this->site_web), // $this->site_web && strpos($this->site_web, 'http') === false ? url($this->site_web) : $this->site_web,
-            "logo" => getLinkToFile($this->logo), // $this->logo && strpos($this->logo, 'http') === false ? url($this->logo) : $this->logo,
-            "photo_couverture" => getLinkToFile($this->photo_couverture),
-            "adresse" => $this->adresse,
-            "ville" => $this->ville,
-            "pays" => $this->pays,
-            "num_contribuable" => $this->num_contribuable,
-        ];
+        $data = parent::toArray($request);
+        // $professionnel = [
+        //     'id' => $this->id,
+        //     "user_id" => $this->user_id,
+        //     "titre_professionnel" => $this->titre_professionnel,
+        //     "email_pro" => $this->email_pro,
+        //     "telephone_pro" => $this->telephone_pro,
+        //     "nom_entreprise" => $this->nom_entreprise,
+        //     "description_entreprise" => $this->description_entreprise,
+        //     "site_web" => getLinkToFile($this->site_web), // $this->site_web && strpos($this->site_web, 'http') === false ? url($this->site_web) : $this->site_web,
+        //     "logo" => getLinkToFile($this->logo), // $this->logo && strpos($this->logo, 'http') === false ? url($this->logo) : $this->logo,
+        //     "photo_couverture" => getLinkToFile($this->photo_couverture),
+        //     "adresse" => $this->adresse,
+        //     "ville" => $this->ville,
+        //     "pays" => $this->pays,
+        //     "num_contribuable" => $this->num_contribuable,
+        // ];
+        if (isset($this->logo)) {
+            $data["photo_couverture"] = getLinkToFile($this->photo_couverture);
+        }
+        if (isset($this->logo)) {
+            $data["logo"] = getLinkToFile($this->logo);
+        }
+        if (isset($this->site_web)) {
+            $data["site_web"] = getLinkToFile($this->site_web);
+        }
         // if (isset($this->offres)) {
-        //     $professionnel['offres'] = OffreResource::collection($this->offres);
+        //     $data['offres'] = $this->offre; //OffreResource::collection($this->offres);
         // }
 
-        return $professionnel;
+        return $data;
     }
 }
