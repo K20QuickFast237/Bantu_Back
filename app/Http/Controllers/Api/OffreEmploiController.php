@@ -74,13 +74,15 @@ class OffreEmploiController extends Controller
         $offreEmploi->increment('nombre_vues');
         
         return $this->handleApiNoTransaction(fn() =>
-            $offreEmploi
-                ->loadCount('candidatures')
-                ->load([
-                    'skills' => fn($q) => $q->orderBy('pivot_ordre_aff'),
-                    'employeur',
-                    'categorie',
-                ])
+            new OffreResource(
+                $offreEmploi
+                    ->loadCount('candidatures')
+                    ->load([
+                        'skills' => fn($q) => $q->orderBy('pivot_ordre_aff'),
+                        'employeur',
+                        'categorie',
+                    ])
+            )
         );
     }
 
@@ -129,10 +131,11 @@ class OffreEmploiController extends Controller
             }
 
             // Retour avec les skills ordonnés
-            return $offre->load([
-                'skills' => fn($q) => $q->orderBy('pivot_ordre_aff'),
-                'categorie',
-            ]);
+            return new OffreResource($offre->load([
+                    'skills' => fn($q) => $q->orderBy('pivot_ordre_aff'),
+                    'categorie',
+                ])
+            );
         }, 201);
     }
 
@@ -181,10 +184,11 @@ class OffreEmploiController extends Controller
                 $offreEmploi->skills()->sync($syncData);
             }
 
-            return $offreEmploi->load([
-                'skills' => fn($q) => $q->orderBy('pivot_ordre_aff'),
-                'categorie',
-            ]);
+            return new OffreResource($offreEmploi->load([
+                    'skills' => fn($q) => $q->orderBy('pivot_ordre_aff'),
+                    'categorie',
+                ])
+            );
         });
     }
 
@@ -208,11 +212,14 @@ class OffreEmploiController extends Controller
     {
         return $this->handleApiNoTransaction(function () {
             $userId = auth()->id();
-            return OffreEmploi::with([
+            return OffreResource::collection(
+                OffreEmploi::with([
                   'skills' => fn($q) => $q->orderBy('pivot_ordre_aff'),
                   'categorie'
                 ])  ->whereHas('employeur', fn($q) => $q->where('user_id', $userId))
-                    ->paginate(10);
+                    ->get()
+                    // ->paginate(10)
+            );
         });
     }
 

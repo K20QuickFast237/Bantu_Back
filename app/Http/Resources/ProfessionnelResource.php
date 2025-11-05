@@ -31,9 +31,9 @@ class ProfessionnelResource extends JsonResource
             "pays" => $this->pays,
             "num_contribuable" => $this->num_contribuable,
         ];
-        if (isset($this->offres)) {
-            $professionnel['offres'] = OffreResource::collection($this->offres);
-        }
+        // if (isset($this->offres)) {
+        //     $professionnel['offres'] = OffreResource::collection($this->offres);
+        // }
 
         return $professionnel;
     }
