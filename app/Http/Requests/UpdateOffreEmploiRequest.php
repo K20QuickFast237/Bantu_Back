@@ -32,7 +32,7 @@ class UpdateOffreEmploiRequest extends FormRequest
             'experience_requise' => 'nullable|in:<1an,1-3ans,4-5ans,>5ans',
             'ville' => 'sometimes|string|max:255',
             'pays' => 'sometimes|string|max:255',
-            'type_contrat' => 'sometimes|in:cdi,cdd,interim,stage,alternance,freelance,autre',
+            'type_contrat' => 'sometimes|in:CDI,CDD,Interim,Stage,Alternance,Freelance,Autre',
             'remuneration_min' => 'nullable|numeric|min:0',
             'remuneration_max' => 'nullable|numeric|gte:remuneration_min',
             'document_annonce' => 'sometimes|file|mimes:pdf,doc,docx|max:2048',
