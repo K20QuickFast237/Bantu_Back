@@ -37,7 +37,7 @@ use Laravel\Socialite\Facades\Socialite;
 Broadcast::routes(['middleware' => ['auth:api']]); //->middleware('auth:api');
 
 Route::middleware('auth:api')->prefix('user')->group(function () {
-    Route::get('/{user}', fn(User $user) => response()->json(new UserResource($user)))->middleware('verified'); // Verified to ensure the user's email is verified
+    Route::get('/{user}', fn(User $user) => response()->json(new UserResource($user))); //->middleware('verified'); // Verified to ensure the user's email is verified
     Route::get('/{user}/skills', [UserController::class, 'getUserSkills']);
     Route::get('/{user}/roles', [UserController::class, 'getUserRoles']);
     Route::post('/{user}/skill', [UserController::class, 'setUserSkill']);
