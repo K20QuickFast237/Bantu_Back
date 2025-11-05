@@ -128,7 +128,7 @@ class CandidatureController extends Controller
 
             // Ouvrir la conversation et notifier par email
             // Vérifier si une conversation entre ces 2 utilisateurs existe déjà
-            $recruteurId = $candidature->offre->employeur_id;
+            $recruteurId = $candidature->offre->employeur->user_id;
             $candidatId = $user->id;
             $conversation = Conversation::whereHas('participants', fn($q) => $q->where('users.id', $candidatId))
                 ->whereHas('participants', fn($q) => $q->where('users.id', $recruteurId))
@@ -138,11 +138,16 @@ class CandidatureController extends Controller
 
             if (!$conversation) {
                 $conversation = Conversation::create(); // pas de title
-
-                $conversation->participants()->attach([
-                    $candidatId => ['joined_at' => now()],
-                    $recruteurId => ['joined_at' => now()],
-                ]);
+                if ($recruteurId == $candidatId) {
+                    $conversation->participants()->attach([
+                        $candidatId => ['joined_at' => now()],
+                    ]);
+                }else {
+                    $conversation->participants()->attach([
+                        $candidatId => ['joined_at' => now()],
+                        $recruteurId => ['joined_at' => now()],
+                    ]);
+                }
             }
             // ajout du premier message dans la conversation.
             $message = $conversation->messages()->create([
