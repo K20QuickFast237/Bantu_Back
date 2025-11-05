@@ -56,6 +56,7 @@ Route::prefix('newsletter')->group(function () {
 //Route pour les types de contrat
 Route::get('/types-contrat', [MetadataController::class, 'typesContrat']);
 Route::get('/offres/categories-populaires', [OffreEmploiController::class, 'categoriesPopulaires']);
+Route::get('/offres/niveaux', [OffreEmploiController::class, 'listNiveauExperience']);
 
 //Route pour la liste des entreprises ayant des offres en cours ou ayant au moins une offfre
 Route::prefix('entreprises')->group(function () {
@@ -151,8 +152,6 @@ Route::post('/google-login', [AuthController::class, 'googleLogin'])->middleware
 // Login with LinkedIn
 Route::get('/linkedin-login', [AuthController::class, 'linkedinLogin'])->middleware('guest');
 Route::get('/linkedin-login-callback', [AuthController::class, 'handlelinkedinCallback']);
-
-Route::get('/offres/niveaux', [OffreEmploiController::class, 'listNiveauExperience']);
 
 Route::middleware('auth:api')->group(function () {
     Route::get('user', [AuthController::class, 'user']);

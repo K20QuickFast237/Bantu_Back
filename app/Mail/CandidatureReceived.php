@@ -44,12 +44,12 @@ class CandidatureReceived extends Mailable
             view: 'mails.candidature.received',
             with: [
                 'recipientName' => '', //$this->candidature->name,
-                'positionTitle' => '', //$this->candidature->price,
-                'applicantName' => '',
-                'applicantEmail' => '',
-                'submittedAt' => '',
-                'actionUrl' => '',
-                'companyName' => '',
+                'positionTitle' => $this->candidature->offre,
+                'applicantName' => auth()->user()->nom . ' ' . auth()->user()->prenom,
+                'applicantEmail' => auth()->user()->email,
+                'submittedAt' => $this->candidature->created_at->format('d/m/Y'),
+                'companyName' => env('APP_NAME', 'BantuLink'),
+                // 'actionUrl' => '',
             ],
         );
     }

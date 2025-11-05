@@ -145,11 +145,14 @@ class CandidatureController extends Controller
                 ]);
             }
             // ajout du premier message dans la conversation.
-            $conversation->messages()->create([
+            $message = $conversation->messages()->create([
                 'conversation_id' => $conversation->id,
                 'sender_id' => $recruteurId,
                 'content' => "Merci de nous avoir envoyé votre candidature pour le poste de " . $candidature->offre->titre . ". Nous l'examinerons et vous contacterons bientôt.",
             ]);
+            // Émettre l'événement après l'enregistrement complet du message
+            event(new \App\Events\MessageSent($message));
+
             // Envoyer l'email au recruteur
             $recruteurEmail = $candidature->offre->employeur->email_pro;
             Mail::to($recruteurEmail)->send(new CandidatureReceived($candidature));
