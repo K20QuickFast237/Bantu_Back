@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Enums\RoleValues;
 use App\Http\Requests\StoreOffreEmploiRequest;
 use App\Http\Requests\UpdateOffreEmploiRequest;
+use App\Http\Resources\OffreResource;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\OffreEmploi;
 use App\Models\OffreCategorie;
@@ -47,7 +48,7 @@ class OffreEmploiController extends Controller
                 return $offre;
             });
 
-            return $offres;
+            return OffreResource::collection($offres);
             // $userId = auth()->id();
 
             // $offres = OffreEmploi::with(['skills' => fn($q) => $q->orderBy('pivot_ordre_aff'), 'employeur', 'categorie'])
