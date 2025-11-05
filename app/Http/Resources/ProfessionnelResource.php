@@ -14,6 +14,7 @@ class ProfessionnelResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        // $data = parent::toArray($request);
         $professionnel = [
             'id' => $this->id,
             "user_id" => $this->user_id,
@@ -30,6 +31,9 @@ class ProfessionnelResource extends JsonResource
             "pays" => $this->pays,
             "num_contribuable" => $this->num_contribuable,
         ];
+        if (isset($this->offres)) {
+            $professionnel['offres'] = OffreResource::collection($this->offres);
+        }
 
         return $professionnel;
     }

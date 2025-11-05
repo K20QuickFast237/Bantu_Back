@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProfessionnelResource;
 use Illuminate\Http\Request;
 use App\Models\Professionnel;
 use Illuminate\Http\Response;
@@ -13,11 +14,13 @@ class EntrepriseController extends Controller
     
     public function entreprisesAvecOffresEnCours()
     {
-        $entreprises = Professionnel::whereHas('offres', function ($query) {
-            $query->where('statut', 'active');
-        })->with(['offres' => function ($query) {
-            $query->where('statut', 'active');
-        }])->get();
+        $entreprises = ProfessionnelResource::collection(
+            Professionnel::whereHas('offres', function ($query) {
+                $query->where('statut', 'active');
+            })->with(['offres' => function ($query) {
+                $query->where('statut', 'active');
+            }])->get()
+        );
 
         return response()->json([
             'count' => $entreprises->count(),
