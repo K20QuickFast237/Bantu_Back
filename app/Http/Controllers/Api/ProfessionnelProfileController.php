@@ -7,9 +7,11 @@ use App\Http\Enums\RoleValues;
 use Illuminate\Http\Request;
 use App\Http\Requests\Api\StoreProfessionnelRequest;
 use App\Http\Requests\Api\UpdateProfessionnelRequest;
+use App\Http\Resources\ProfessionnelResource;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\Professionnel;
 use App\Models\Role;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -32,12 +34,17 @@ class ProfessionnelProfileController extends Controller
             $data['photo_couverture'] = $request->file('photo_couverture')->store('photos_couvertures', 'public');
         }
 
-        $professionnel = Professionnel::create($data);
+        try {
+            $professionnel = Professionnel::create($data);
+        } catch (UniqueConstraintViolationException $th) {
+            return response()->json(['message' => "Un profil professionnel existe déjà pour cet utilisateur.",], 409);
+        }
+
         $user->update(['role_actif' => RoleValues::RECRUTEUR]);
 
         return response()->json([
             'message' => "Profil complété avec succès",
-            'data' => $professionnel,
+            'data' => new ProfessionnelResource($professionnel),
         ], 201);
     }
 

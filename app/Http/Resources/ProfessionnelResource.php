@@ -24,6 +24,7 @@ class ProfessionnelResource extends JsonResource
             "description_entreprise" => $this->description_entreprise,
             "site_web" => getLinkToFile($this->site_web), // $this->site_web && strpos($this->site_web, 'http') === false ? url($this->site_web) : $this->site_web,
             "logo" => getLinkToFile($this->logo), // $this->logo && strpos($this->logo, 'http') === false ? url($this->logo) : $this->logo,
+            "photo_couverture" => getLinkToFile($this->photo_couverture),
             "adresse" => $this->adresse,
             "ville" => $this->ville,
             "pays" => $this->pays,
