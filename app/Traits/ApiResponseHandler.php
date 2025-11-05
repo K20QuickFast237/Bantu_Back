@@ -5,6 +5,7 @@ namespace App\Traits;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Database\UniqueConstraintViolationException;
 
 trait ApiResponseHandler
 {
@@ -25,6 +26,11 @@ trait ApiResponseHandler
             DB::commit();
 
             return response()->json($result, $successCode);
+        } catch (UniqueConstraintViolationException $e) {
+            return response()->json([
+                'error' => 'Duplication de données',
+                'message' => 'Une entrée avec les mêmes valeurs existe déjà.',
+            ], 409);
         } catch (Exception $e) {
             DB::rollBack();
 

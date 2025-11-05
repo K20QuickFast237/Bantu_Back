@@ -152,6 +152,8 @@ Route::post('/google-login', [AuthController::class, 'googleLogin'])->middleware
 Route::get('/linkedin-login', [AuthController::class, 'linkedinLogin'])->middleware('guest');
 Route::get('/linkedin-login-callback', [AuthController::class, 'handlelinkedinCallback']);
 
+Route::get('/offres/niveaux', [OffreEmploiController::class, 'listNiveauExperience']);
+
 Route::middleware('auth:api')->group(function () {
     Route::get('user', [AuthController::class, 'user']);
     Route::post('logout', [AuthController::class, 'logout']);
@@ -187,7 +189,6 @@ Route::middleware('auth:api')->group(function () {
 
     // Routes publiques
     Route::get('/offres', [OffreEmploiController::class, 'index']);
-    Route::get('/offres/niveaux', [OffreEmploiController::class, 'listNiveauExperience']);
     Route::get('/offres/{offreEmploi}', [OffreEmploiController::class, 'show']);
 
 

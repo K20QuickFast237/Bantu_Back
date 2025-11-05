@@ -8,11 +8,16 @@ use App\Http\Enums\RoleValues;
 use App\Http\Requests\StoreCandidatureRequest;
 use App\Http\Requests\UpdateCandidatureRequest;
 use App\Http\Requests\UpdateCandidatureRecruteurRequest;
+use App\Http\Resources\CandidatureResource;
+use App\Mail\CandidatureReceived;
 use App\Models\Candidature;
+use App\Models\Conversation;
 use App\Traits\ApiResponseHandler;
 use Illuminate\Http\JsonResponse;
 use App\Services\CvSnapshotService;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Mail;
 
 class CandidatureController extends Controller
 {
@@ -82,9 +87,11 @@ class CandidatureController extends Controller
             // Upload fichiers
             if ($request->hasFile('cv_file')) {
                 $data['cv_url'] = $request->file('cv_file')->store('cvs', 'public');
+                unset($data['cv_file']);
             }
             if ($request->hasFile('motivation_file')) {
                 $data['motivation_url'] = $request->file('motivation_file')->store('motivations', 'public');
+                unset($data['motivation_file']);
             }
 
             // Gestion des autres documents
@@ -119,10 +126,38 @@ class CandidatureController extends Controller
                 $user->update(['role_actif' => RoleValues::CANDIDAT]);
             }
 
-            return $candidature->load(['offre.skills']);
-
             // Ouvrir la conversation et notifier par email
+            // Vérifier si une conversation entre ces 2 utilisateurs existe déjà
+            $recruteurId = $candidature->offre->employeur_id;
+            $candidatId = $user->id;
+            $conversation = Conversation::whereHas('participants', fn($q) => $q->where('users.id', $candidatId))
+                ->whereHas('participants', fn($q) => $q->where('users.id', $recruteurId))
+                ->has('participants', '=', 2) // s'assure qu'il n'y a que 2 participants
+                ->first();
+
+
+            if (!$conversation) {
+                $conversation = Conversation::create(); // pas de title
+
+                $conversation->participants()->attach([
+                    $candidatId => ['joined_at' => now()],
+                    $recruteurId => ['joined_at' => now()],
+                ]);
+            }
+            // ajout du premier message dans la conversation.
+            $conversation->messages()->create([
+                'conversation_id' => $conversation->id,
+                'sender_id' => $recruteurId,
+                'content' => "Merci de nous avoir envoyé votre candidature pour le poste de " . $candidature->offre->titre . ". Nous l'examinerons et vous contacterons bientôt.",
+            ]);
+            // Envoyer l'email au recruteur
+            $recruteurEmail = $candidature->offre->employeur->email_pro;
+            Mail::to($recruteurEmail)->send(new CandidatureReceived($candidature));
+            // ->cc($moreUsers)
+            // ->bcc($evenMoreUsers)
+            // ->queue(new CandidatureReceived($candidature));
             
+            return new CandidatureResource($candidature->load(['offre.skills']));
         }, 201);
     }
 
