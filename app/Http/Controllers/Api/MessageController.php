@@ -68,8 +68,7 @@ class MessageController extends Controller
             ]);
 
             // Émettre l'événement après l'enregistrement complet du message
-            // event(new \App\Events\MessageSent($message));
-            SendMessage::dispatch($message);
+            event(new \App\Events\MessageSent($message));
 
             // Retourner le message avec ses attachments
             return response()->json($message->load('attachments'));

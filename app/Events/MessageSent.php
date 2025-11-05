@@ -1,6 +1,7 @@
 <?php
 namespace App\Events;
 
+use App\Http\Resources\MessageResource;
 use App\Models\Message;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -17,7 +18,8 @@ class MessageSent implements ShouldBroadcast
 
     public function __construct(Message $message)
     {
-        $this->message = $message; //->load('attachments', 'sender');
+        $this->message = $message->load('attachments', 'sender');
+        /*
         
         // Ajout d'un log pour vérifier l'événement
         \Log::info('Événement MessageSent créé', [
@@ -25,22 +27,25 @@ class MessageSent implements ShouldBroadcast
             // 'conversation_id' => $this->message->conversation_id,
             'time' => now()->format('Y-m-d H:i:s'),
         ]);
+        */
     }
 
-    public function broadcastOn()
+    public function broadcastOn(): PrivateChannel
     {
-        return new PrivateChannel('conversations.' . $this->message->conversation_id);
+        $channel = 'conversations.' . $this->message->conversation_id;
+        return new PrivateChannel($channel);
     }
 
-    // public function broadcastWith()
-    // {
-    //     return [
-    //         'message' => (array)$this->message,
-    //     ];
-    // }
+    public function broadcastWith()
+    {
+        return [
+            // 'message' => (array)$this->message,
+            'message' => new MessageResource($this->message),
+        ];
+    }
 
-    // public function broadcastAs()
-    // {
-    //     return 'message.sent';
-    // }
+    public function broadcastAs()
+    {
+        return 'message.sent';
+    }
 }
