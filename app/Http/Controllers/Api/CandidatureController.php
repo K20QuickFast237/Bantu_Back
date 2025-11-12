@@ -154,7 +154,7 @@ class CandidatureController extends Controller
             $message = $conversation->messages()->create([
                 'conversation_id' => $conversation->id,
                 'sender_id' => $recruteurId,
-                'content' => "Merci de nous avoir envoyé votre candidature pour le poste de " . $candidature->offre->titre . ". Nous l'examinerons et vous contacterons bientôt.",
+                'content' => "Merci de nous avoir envoyé votre candidature pour le poste de " . $candidature->offre->titre_poste . ". Nous l'examinerons et vous contacterons bientôt.",
             ]);
             // Émettre l'événement après l'enregistrement complet du message
             event(new \App\Events\MessageSent($message));
