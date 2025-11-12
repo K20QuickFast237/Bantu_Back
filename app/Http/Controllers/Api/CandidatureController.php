@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateCandidatureRequest;
 use App\Http\Requests\UpdateCandidatureRecruteurRequest;
 use App\Http\Resources\CandidatureResource;
 use App\Mail\CandidatureReceived;
+use App\Mail\CandidatureSended;
 use App\Models\Candidature;
 use App\Models\Conversation;
 use App\Traits\ApiResponseHandler;
@@ -164,6 +165,9 @@ class CandidatureController extends Controller
             // ->cc($moreUsers)
             // ->bcc($evenMoreUsers)
             // ->queue(new CandidatureReceived($candidature));
+
+            // Envoyer l'email au candidat
+            Mail::to($user->email)->send(new CandidatureSended($candidature));
             
             return new CandidatureResource($candidature->load(['offre.skills']));
         }, 201);
