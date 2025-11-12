@@ -6,12 +6,11 @@ use App\Models\Candidature;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class CandidatureReceived extends Mailable
+class CandidatureSended extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -31,7 +30,7 @@ class CandidatureReceived extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Candidature Received',
+            subject: 'Candidature Sended',
         );
     }
 
@@ -41,9 +40,9 @@ class CandidatureReceived extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mails.candidature.received',
+            view: 'mails.candidature.sended',
             with: [
-                'recipientName' => $this->candidature->offre->employeur->nom_entreprise,
+                'recipientName' => '', //$this->candidature->name,
                 'positionTitle' => $this->candidature->offre->titre_poste,
                 'applicantName' => auth()->user()->nom . ' ' . auth()->user()->prenom,
                 'applicantEmail' => auth()->user()->email,
@@ -61,10 +60,6 @@ class CandidatureReceived extends Mailable
      */
     public function attachments(): array
     {
-        return [
-            // Attachment::fromPath('/path/to/file')
-            //     ->as('name.pdf')
-            //     ->withMime('application/pdf'),
-        ];
+        return [];
     }
 }
