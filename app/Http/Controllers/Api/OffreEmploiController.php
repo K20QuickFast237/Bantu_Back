@@ -40,6 +40,7 @@ class OffreEmploiController extends Controller
                             'categorie'
                         ])
                         ->where('statut', 'active')
+                        ->orderBy('id', 'desc')
                         ->get();
 
             // Ajouter les flags directement

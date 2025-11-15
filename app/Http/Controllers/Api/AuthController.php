@@ -73,9 +73,15 @@ class AuthController extends Controller
         ], 200);
     }
 
-    public function user(): UserResource
+    public function user(?User $user): UserResource|JsonResponse
     {
-        $user = Auth::user();
+        if (!Auth::user()->isRecruteur) {
+            return response()->json(['message' => 'Access denied. You dont have the required permissions.'], 403);
+        }
+        if (!$user) {
+            $user = Auth::user();
+        }
+        // $user = Auth::user();
         // $user->rolerole_actif === RoleValues::RECRUTEUR ? $user->particulier : $user->professionnel; // : $user->particulier;
         $user->formations;
         $user->experiences;

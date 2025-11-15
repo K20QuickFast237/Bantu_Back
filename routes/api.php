@@ -38,7 +38,8 @@ use Laravel\Socialite\Facades\Socialite;
 Broadcast::routes(['middleware' => ['auth:api']]); //->middleware('auth:api');
 
 Route::middleware('auth:api')->prefix('user')->group(function () {
-    Route::get('/{user}', fn(User $user) => response()->json(new UserResource($user))); //->middleware('verified'); // Verified to ensure the user's email is verified
+    // Route::get('/{user}', fn(User $user) => response()->json(new UserResource($user))); //->middleware('verified'); // Verified to ensure the user's email is verified
+    Route::get('/{user}', [AuthController::class, 'user']);
     Route::get('/{user}/skills', [UserController::class, 'getUserSkills']);
     Route::get('/{user}/roles', [UserController::class, 'getUserRoles']);
     Route::post('/{user}/skill', [UserController::class, 'setUserSkill']);
@@ -206,13 +207,13 @@ Route::middleware('auth:api')->group(function () {
         // Candidat : créer une candidature
         Route::post('candidatures', [CandidatureController::class, 'store'])
             ->middleware('can:isCandidat');
-
-        //voir les détails d'une candidature
-        Route::get('/candidatures/{candidature}', [CandidatureController::class, 'show']);
-
+            
         // Candidat : voir toutes ses candidatures
         Route::get('candidatures/me', [CandidatureController::class, 'myCandidatures'])
             ->middleware('can:isCandidat');
+
+        //voir les détails d'une candidature
+        Route::get('candidatures/{candidature}', [CandidatureController::class, 'show']);
 
         // Candidat : mettre à jour CV ou motivation
         Route::put('candidatures/{candidature}', [CandidatureController::class, 'update'])

@@ -33,7 +33,7 @@ class Candidature extends Model
     // Le particulier (candidat)
     public function particulier(): BelongsTo
     {
-        return $this->belongsTo(Particulier::class);
+        return $this->belongsTo(Particulier::class)->with('user');
     }
 
     // L’offre d’emploi

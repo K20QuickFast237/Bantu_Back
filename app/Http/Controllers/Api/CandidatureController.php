@@ -62,7 +62,7 @@ class CandidatureController extends Controller
     /**
      * Candidat : Voir ses candidatures
      */
-    public function Candidatures(): JsonResponse
+    public function myCandidatures(): JsonResponse
     {
         return $this->handleApiNoTransaction(function () {
             $user = auth()->user();
@@ -183,11 +183,12 @@ class CandidatureController extends Controller
         return $this->handleApiNoTransaction(function () use ($candidature) {
             $this->authorize('view', $candidature);
 
-            return $candidature->load([
+            $candidature = $candidature->load([
                 'offre.skills',
                 'offre.employeur',
                 'particulier'
             ]);
+            return new CandidatureResource($candidature);
         });
     }
 
