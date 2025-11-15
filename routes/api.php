@@ -25,6 +25,7 @@ use App\Http\Controllers\API\TagController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\DeliveryMethodController;
 use App\Http\Controllers\Api\CvController;
+use App\Http\Controllers\Api\PosteRechercheController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -334,6 +335,6 @@ Route::middleware(['auth:api'])->prefix('shops/{shopId}')->group(function () {
 
 });
 
-
-
-
+Route::middleware('auth:api')->group(function () {
+    Route::apiResource('poste-recherche', PosteRechercheController::class)->only(['index', 'store', 'update', 'destroy']);
+});

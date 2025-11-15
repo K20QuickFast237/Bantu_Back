@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Enums\NiveauExp;
 use App\Http\Enums\RoleValues;
 use App\Http\Requests\StoreOffreEmploiRequest;
 use App\Http\Requests\UpdateOffreEmploiRequest;
@@ -226,10 +227,10 @@ class OffreEmploiController extends Controller
     public function listNiveauExperience(): JsonResponse
     {
         return response()->json([
-            'junior' => '<1an',
-            'intermediaire' => '1-3ans',
-            'senior' => '4-5ans',
-            'expert' => '>5ans',
+            'junior' => NiveauExp::JUNIOR->value,
+            'intermediaire' => NiveauExp::INTERMEDIAIRE->value,
+            'senior' => NiveauExp::SENIOR->value,
+            'expert' => NiveauExp::EXPERT->value,
         ]);
     }
     /**
