@@ -219,7 +219,8 @@ class OffreEmploiController extends Controller
                 OffreEmploi::with([
                   'skills' => fn($q) => $q->orderBy('pivot_ordre_aff'),
                   'categorie'
-                ])  ->whereHas('employeur', fn($q) => $q->where('user_id', $userId))
+                ])  ->withCount('candidatures as candidatures_count')
+                    ->whereHas('employeur', fn($q) => $q->where('user_id', $userId))
                     ->get()
                     // ->paginate(10)
             );
