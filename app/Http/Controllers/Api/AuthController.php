@@ -75,11 +75,10 @@ class AuthController extends Controller
 
     public function user(?User $user): UserResource|JsonResponse
     {
-        if (!Auth::user()->isRecruteur) {
-            return response()->json(['message' => 'Access denied. You dont have the required permissions.'], 403);
-        }
-        if (!$user) {
+        if (!$user->id) {
             $user = Auth::user();
+        }else if (!Auth::user()->isRecruteur()) {
+            return response()->json(['message' => 'Access denied. You dont have the required permissions.'], 403);
         }
         // $user = Auth::user();
         // $user->rolerole_actif === RoleValues::RECRUTEUR ? $user->particulier : $user->professionnel; // : $user->particulier;
