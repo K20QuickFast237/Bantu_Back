@@ -33,9 +33,11 @@ class CandidatureController extends Controller
             $user = auth()->user();
             $professionnel = $user->professionnel;
 
-            return Candidature::whereHas('offre', function ($q) use ($user) {
+            $candidatures = Candidature::whereHas('offre', function ($q) use ($user) {
                 $q->where('employeur_id', $user->professionnel->id);
             })->with(['particulier', 'offre.skills'])->get();
+
+            return CandidatureResource::collection($candidatures);
         });
     }
 
@@ -55,7 +57,7 @@ class CandidatureController extends Controller
             ->with(['particulier', 'offre.skills'])
             ->get();
 
-            return $candidatures;
+            return $candidatures ? CandidatureResource::collection($candidatures) : [];
         });
     }
 
@@ -68,9 +70,11 @@ class CandidatureController extends Controller
             $user = auth()->user();
             $particulier = $user->particulier;
 
-            return Candidature::where('particulier_id', $particulier->id)
+            $candidatures = Candidature::where('particulier_id', $particulier->id)
                 ->with(['offre.skills'])
                 ->get();
+
+            return CandidatureResource::collection($candidatures);
         });
     }
 
@@ -223,7 +227,7 @@ class CandidatureController extends Controller
 
             $candidature->update($data);
 
-            return $candidature->load(['offre.skills']);
+            return new CandidatureResource($candidature->load(['offre.skills']));
         });
     }
 
@@ -241,7 +245,7 @@ class CandidatureController extends Controller
                 'statut' => $data['statut'] ?? $candidature->statut,
             ]);
 
-            return $candidature->load(['particulier', 'offre.skills']);
+            return  new CandidatureResource($candidature->load(['particulier', 'offre.skills']));
         });
     }
 
