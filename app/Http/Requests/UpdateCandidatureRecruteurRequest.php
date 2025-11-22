@@ -25,6 +25,9 @@ class UpdateCandidatureRecruteurRequest extends FormRequest
             'statut' => 'sometimes|in:en_revision,preselectionne,invitation_entretien,rejete,embauche',
             'note_ia' => 'nullable|numeric|min:0|max:100',
             'commentaire_employeur' => 'nullable|string',
+            'date_entretien' => 'sometimes|required|date|after:now',
+            'mode_entretien' => 'sometimes|required|string',
+            'lieu_entretien' => 'sometimes|required|string',
 
             // Champs interdits pour un recruteur
             'cv_url' => 'prohibited',

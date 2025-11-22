@@ -9,7 +9,10 @@ use App\Http\Requests\StoreCandidatureRequest;
 use App\Http\Requests\UpdateCandidatureRequest;
 use App\Http\Requests\UpdateCandidatureRecruteurRequest;
 use App\Http\Resources\CandidatureResource;
+use App\Mail\CandidatureInvited;
+use App\Mail\CandidaturePreselected;
 use App\Mail\CandidatureReceived;
+use App\Mail\CandidatureRejected;
 use App\Mail\CandidatureSended;
 use App\Models\Candidature;
 use App\Models\Conversation;
@@ -135,10 +138,11 @@ class CandidatureController extends Controller
             // Vérifier si une conversation entre ces 2 utilisateurs existe déjà
             $recruteurId = $candidature->offre->employeur->user_id;
             $candidatId = $user->id;
-            $conversation = Conversation::whereHas('participants', fn($q) => $q->where('users.id', $candidatId))
-                ->whereHas('participants', fn($q) => $q->where('users.id', $recruteurId))
-                ->has('participants', '=', 2) // s'assure qu'il n'y a que 2 participants
-                ->first();
+            $conversation = $this->getCandidatureConversation($candidatId, $recruteurId);
+            // Conversation::whereHas('participants', fn($q) => $q->where('users.id', $candidatId))
+            //     ->whereHas('participants', fn($q) => $q->where('users.id', $recruteurId))
+            //     ->has('participants', '=', 2) // s'assure qu'il n'y a que 2 participants
+            //     ->first();
 
 
             if (!$conversation) {
@@ -241,12 +245,89 @@ class CandidatureController extends Controller
 
             $data = $request->validated();
 
+            if (isset($data['statut']) && $data['statut'] === "invitation_entretien" && !(isset($data['date_entretien']) && isset($data['mode_entretien']) && isset($data['lieu_entretien'])) ) {
+                return response()->json([
+                    'message' => "Veuillez fournir la date, l'heure le mode et le lieu de l'entretien."
+                ], 422);
+            }
+
             $candidature->update([
                 'statut' => $data['statut'] ?? $candidature->statut,
             ]);
+            $recruteurId = $candidature->offre->employeur->user_id;
+            $candidatId = $candidature->particulier->user->id;
+            if ($data['statut'] === "embauche") {
+                # Notification mail et chat pour informer de l'intérêt porté et de la poursuite du traitement des candidatures.
+                $conversation = $this->getCandidatureConversation($candidatId, $recruteurId);
+                // ajout du message dans la conversation.
+                $message = $conversation->messages()->create([
+                    'conversation_id' => $conversation->id,
+                    'sender_id' => $recruteurId,
+                    'content' => "Bienvenue dans l'équipe de ".$candidature->offre->employeur->nom_entreprise,
+                ]);
+                // Émettre l'événement après l'enregistrement complet du message
+                event(new \App\Events\MessageSent($message));
+            }
+            
+            if ($data['statut'] === "rejete") {
+                # Notification mail et chat pour informer de l'intérêt porté et de la poursuite du traitement des candidatures.
+                $conversation = $this->getCandidatureConversation($candidatId, $recruteurId);
+                // ajout du message dans la conversation.
+                $message = $conversation->messages()->create([
+                    'conversation_id' => $conversation->id,
+                    'sender_id' => $recruteurId,
+                    'content' => "Nous sommes ravi d'avoir reçu votre candidature que nous avons traité avec équité et beaucoup d'intérêt. Toutefois, elle n'a pas été celle qui remplit le mieux nos critères pour le poste. Nous vous souhaitons le meilleur dans vos recherches futures.",
+                ]);
+                // Émettre l'événement après l'enregistrement complet du message
+                event(new \App\Events\MessageSent($message));
+                // Envoyer l'email au candidat
+                Mail::to($candidature->particulier->user->email)->send(new CandidatureRejected($candidature));
+            }
+            
+            if ($data['statut'] === "preselectionne") {
+                # Notification mail et chat pour informer de l'intérêt porté et de la poursuite du traitement des candidatures.
+                $conversation = $this->getCandidatureConversation($candidatId, $recruteurId);
+                // ajout du message dans la conversation.
+                $message = $conversation->messages()->create([
+                    'conversation_id' => $conversation->id,
+                    'sender_id' => $recruteurId,
+                    'content' => "Votre candidature suscite de l'intérêt. Toute fois, le processus de sélection est encore en cours. Les étapes suivantes vous seront communiquées prochainement.",
+                ]);
+                // Émettre l'événement après l'enregistrement complet du message
+                event(new \App\Events\MessageSent($message));
+                // Envoyer l'email au candidat
+                Mail::to($candidature->particulier->user->email)->send(new CandidaturePreselected($candidature));
+            }
+            
+            if ($data['statut'] === "invitation_entretien") {
+                # Notification mail et chat pour informer de l'intérêt porté et de la poursuite du traitement des candidatures.
+                $conversation = $this->getCandidatureConversation($candidatId, $recruteurId);
+                // ajout du message dans la conversation.
+                $message = $conversation->messages()->create([
+                    'conversation_id' => $conversation->id,
+                    'sender_id' => $recruteurId,
+                    'content' => "Votre profil nous intéresse. Nous souhaiterions nous entretenir avec vous le " . date('d/m/Y H:i', strtotime($data['date_entretien'])) . " en " . $data['mode_entretien'] . " à l'adresse suivante : " . $data['lieu_entretien'] . ". Merci de confirmer votre disponibilité.",
+                ]);
+                // Émettre l'événement après l'enregistrement complet du message
+                event(new \App\Events\MessageSent($message));
+                // Envoyer l'email au candidat
+                $infosEntretien = [
+                    'date_entretien' => $data['date_entretien'],
+                    'mode_entretien' => $data['mode_entretien'],
+                    'lieu_entretien' => $data['lieu_entretien'],
+                ];
+                Mail::to($candidature->particulier->user->email)->send(new CandidatureInvited($candidature, $infosEntretien));
+            }
 
             return  new CandidatureResource($candidature->load(['particulier', 'offre.skills']));
         });
+    }
+
+    private function getCandidatureConversation($candidatId, $recruteurId){
+        return Conversation::whereHas('participants', fn($q) => $q->where('users.id', $candidatId))
+                ->whereHas('participants', fn($q) => $q->where('users.id', $recruteurId))
+                ->has('participants', '<=', 2) // s'assure qu'il n'y a que 2 participants au plus
+                ->first();
     }
 
 }
