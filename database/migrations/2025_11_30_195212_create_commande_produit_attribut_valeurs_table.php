@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('mkt_commande_produit_attribut_valeurs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('commande_produit_id')->constrained('mkt_commande_produits')->cascadeOnDelete();
-            $table->foreignId('produit_attribut_valeur_id')->constrained('mkt_produit_attribut_valeurs')->cascadeOnDelete();
+            $table->foreignId('commande_produit_id')->constrained('mkt_commande_produits', 'id', 'mkt_cmd_prod_att_val_commande_produit_id_foreign')->cascadeOnDelete();
+            $table->foreignId('produit_attribut_valeur_id')->constrained('mkt_produit_attribut_valeurs', 'id', 'mkt_cmd_prod_att_val_produit_attribut_valeur_id_foreign')->cascadeOnDelete();
             
             // $table->timestamps();
         });
