@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Enums\RoleValues;
 use Illuminate\Http\Request;
 use App\Http\Requests\Api\StoreProfessionnelRequest;
+use App\Http\Requests\Api\StoreVendeurRequest;
 use App\Http\Requests\Api\UpdateProfessionnelRequest;
 use App\Http\Resources\ProfessionnelResource;
+use App\Http\Resources\Vendeur\VendeurResource;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\Professionnel;
 use App\Models\Role;
+use App\Models\Vendeur;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -45,6 +48,37 @@ class ProfessionnelProfileController extends Controller
         return response()->json([
             'message' => "Profil complété avec succès",
             'data' => new ProfessionnelResource($professionnel),
+        ], 201);
+    }
+
+    public function registerVendeur(StoreVendeurRequest $request)
+    {
+        $user = Auth::user();
+        
+        $data = $request->validated();
+        $data['user_id'] = $user->id;
+        $data['statut'] = 'actif';
+
+        if ($request->hasFile('logo')) {
+            $data['logo'] = $request->file('logo')->store('logos', 'public');
+        }
+
+        if ($request->hasFile('couverture')) {
+            $data['photo_couverture'] = $request->file('photo_couverture')->store('photos_couvertures', 'public');
+        }
+
+        try {
+            $vendeur = Vendeur::create($data);
+        } catch (UniqueConstraintViolationException $th) {
+            return response()->json(['message' => "Un profil professionnel existe déjà pour cet utilisateur.",], 409);
+        }
+
+        $user->roles()->attach(Role::where('name', 'Vendeur')->first());
+        $user->update(['role_actif' => RoleValues::VENDEUR]);
+
+        return response()->json([
+            'message' => "Profil complété avec succès",
+            'data' => new VendeurResource($vendeur),
         ], 201);
     }
 

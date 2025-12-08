@@ -7,8 +7,12 @@ use App\Http\Enums\RoleValues;
 use Illuminate\Http\Request;
 use App\Http\Requests\Api\StoreParticulierRequest;
 use App\Http\Requests\Api\UpdateParticulierRequest;
+use App\Http\Resources\Acheteur\AcheteurResource;
 use App\Http\Resources\ParticulierResource;
+use App\Http\Resources\Vendeur\VendeurResource;
 use App\Models\Particulier;
+use App\Models\User;
+use App\Models\Acheteur;
 use App\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use \Illuminate\Database\UniqueConstraintViolationException;
@@ -17,7 +21,7 @@ class ParticulierProfileController extends Controller
 {
     public function store(StoreParticulierRequest $request)
     {
-        $user = Auth::guard('api')->user();
+        $user = Auth::user(); // Auth::guard('api')->user();
 
         $data = $request->validated();
         $data['user_id'] = $user->id;
@@ -90,4 +94,31 @@ class ParticulierProfileController extends Controller
         }
     }
 
+    public function registerAcheteur(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:6|confirmed',
+            'phone' => 'nullable|string|max:20'
+        ]);
+
+        $user = Auth::user();
+        $user->roles()->attach(Role::where('name', 'Acheteur')->first()); // assignRole('acheteur');
+
+        $acheteur = Acheteur::create([
+            'user_id' => $user->id,
+            'infos_livraison' => [],
+            'infos_paiement' => []
+        ]);
+
+        if ($user->rolerole_actif !== RoleValues::VENDEUR) {
+            $user->update(['role_actif' => RoleValues::ACHETEUR]);
+        }
+
+        return response()->json([
+            'message' => "Profil complété avec succès",
+            'data' => new AcheteurResource($acheteur),
+        ], 201);
+    }
 }

@@ -68,6 +68,16 @@ class User extends Authenticatable implements MustVerifyEmail, AuthCanResetPassw
         return $this->hasOne(Professionnel::class);
     }
 
+    public function vendeur()
+    {
+        return $this->hasOne(Vendeur::class);
+    }
+
+    public function Acheteur()
+    {
+        return $this->hasOne(Acheteur::class);
+    }
+
     public function formations()
     {
         return $this->hasMany(Formation::class);

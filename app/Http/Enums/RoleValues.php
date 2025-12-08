@@ -9,6 +9,7 @@ enum RoleValues: string
     case RECRUTEUR = 'Professionnel'; //'Recruteur';
     case FREELANCEUR = 'Freelanceur';
     case VENDEUR = 'Vendeur';
+    case ACHETEUR = 'Acheteur';
 
     public static function values(): array
     {
