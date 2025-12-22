@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Http\Resources\Vendeur;
 
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -18,8 +19,8 @@ class VendeurResource extends JsonResource
             ],
             'nom' => $this->nom,
             'description' => $this->description,
-            'logo_img' => $this->logo_img,
-            'couverture_img' => $this->couverture_img,
+            'logo' => $this->logo_img,
+            'couverture' => $this->couverture_img,
             'produits' => ProduitResource::collection($this->whenLoaded('produits')),
             'mode_paiements' => ProduitResource::collection($this->whenLoaded('produits')),
             'produits' => ProduitResource::collection($this->whenLoaded('produits')),
