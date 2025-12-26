@@ -26,7 +26,7 @@ class CommandeController extends Controller
     public function show($id)
     {
         // $commande = Commande::with(['produits', 'paiements'])->findOrFail($id);
-        $commande = Commande::with(['acheteur','optionLivraison', 'modePaiement', 'produits', 'paiements', 'coupon'])->findOrFail($id);
+        $commande = Commande::with(['acheteur', 'optionLivraison', 'modePaiement', 'produits', 'paiements', 'coupon'])->findOrFail($id);
         $this->authorize('view', $commande);
         return new CommandeResource($commande);
     }
@@ -36,9 +36,9 @@ class CommandeController extends Controller
         $data = $request->validate([
             'option_livraison_id' => 'required|exists:mkt_option_livraisons,id',
             'mode_paiement_id' => 'required|exists:mkt_mode_paiements,id',
-            'pays_livraison' => 'required|string',
-            'ville_livraison' => 'required|string',
-            'adresse_livraison' => 'required|string',
+            'pays_livraison' => 'sometimes|string',
+            'ville_livraison' => 'sometimes|string',
+            'adresse_livraison' => 'sometimes|string',
             'coupon_code' => 'nullable|string'
         ]);
 
