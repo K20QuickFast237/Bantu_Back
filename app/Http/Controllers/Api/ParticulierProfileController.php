@@ -96,12 +96,12 @@ class ParticulierProfileController extends Controller
 
     public function registerAcheteur(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'phone' => 'nullable|string|max:20'
-        ]);
+        // $data = $request->validate([
+        //     'name' => 'required|string|max:255',
+        //     'email' => 'required|email|unique:users',
+        //     'password' => 'required|string|min:6|confirmed',
+        //     'phone' => 'nullable|string|max:20'
+        // ]);
 
         $user = Auth::user();
         $user->roles()->attach(Role::where('name', 'Acheteur')->first()); // assignRole('acheteur');
