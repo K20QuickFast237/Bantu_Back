@@ -13,7 +13,7 @@ class OptionLivraisonResource extends JsonResource
             'nom' => $this->nom,
             'description' => $this->description,
             'isActive' => $this->isActive,
-            'prix' => $this->pivot->prix
+            'prix' => $this->pivot->prix ?? 0,
             // 'produits' => ProduitResource::collection($this->produits),
         ];
     }
