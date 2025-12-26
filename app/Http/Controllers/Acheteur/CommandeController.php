@@ -13,7 +13,9 @@ class CommandeController extends Controller
 {
     public function index()
     {
+        // $commandes = Auth::user()->acheteur->commandes()->get();
         $commandes = Auth::user()->acheteur->commandes()->with('produits')->get();
+        
         return CommandeResource::collection($commandes);
     }
     public function listAll()
@@ -36,9 +38,9 @@ class CommandeController extends Controller
         $data = $request->validate([
             'option_livraison_id' => 'required|exists:mkt_option_livraisons,id',
             'mode_paiement_id' => 'required|exists:mkt_mode_paiements,id',
-            'pays_livraison' => 'sometimes|string',
-            'ville_livraison' => 'sometimes|string',
-            'adresse_livraison' => 'sometimes|string',
+            'pays_livraison' => 'sometimes|nullable|string',
+            'ville_livraison' => 'sometimes|nullable|string',
+            'adresse_livraison' => 'sometimes|nullable|string',
             'coupon_code' => 'nullable|string'
         ]);
 

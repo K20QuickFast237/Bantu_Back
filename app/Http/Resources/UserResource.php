@@ -5,6 +5,8 @@ namespace App\Http\Resources;
 use App\Http\Enums\RoleValues;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Acheteur\SimpleAcheteurResource;
+use App\Http\Resources\Vendeur\SimpleVendeurResource;
 
 class UserResource extends JsonResource
 {
@@ -24,6 +26,8 @@ class UserResource extends JsonResource
             'actif' => (bool)$this->is_active,
             'last_login' => $this->last_login,
             'email_verified_at' => $this->email_verified_at,
+            'acheteur' => $this->acheteur ? new SimpleAcheteurResource($this->acheteur) : null,
+            'vendeur' => $this->vendeur ? new SimpleVendeurResource($this->vendeur) : null,
         ];
         if ($status = $this->isCandidat() || $this->isRecruteur()) {
             $user['profilCompleted'] = $status;

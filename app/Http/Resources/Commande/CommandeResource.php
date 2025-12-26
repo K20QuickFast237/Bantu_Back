@@ -22,6 +22,7 @@ class CommandeResource extends JsonResource
             'sous_total' => $this->sous_total,
             'frais_livraison' => $this->frais_livraison,
             'total' => $this->total,
+            'date_commande' => $this->created_at->format('Y-m-d H:i:s'),
             'produits' => CommandeProduitResource::collection($this->whenLoaded('produits')),
             'paiements' => PaiementResource::collection($this->whenLoaded('paiements')),
             'option_livraison' => new OptionLivraisonResource($this->whenLoaded('optionLivraison')),
