@@ -14,7 +14,8 @@ class CommandeController extends Controller
     public function index()
     {
         // $commandes = Auth::user()->acheteur->commandes()->get();
-        $commandes = Auth::user()->acheteur->commandes()->with('produits')->get();
+        $commandes = Auth::user()->acheteur->commandes()->with('produits')
+            ->where('statut', '!=', 'en_attente')->get();
         
         return CommandeResource::collection($commandes);
     }
