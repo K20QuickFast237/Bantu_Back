@@ -85,6 +85,8 @@ class AuthController extends Controller
         $user->formations;
         $user->experiences;
         $user->skills;
+        $user->vendeur;
+        $user->acheteur;
         
         return new UserResource($user);
     }
