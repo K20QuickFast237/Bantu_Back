@@ -26,6 +26,7 @@ class CommandeService
             $commande->update([
                 'acheteur_id' => $acheteur->id,
                 'option_livraison_id' => $data['option_livraison_id'],
+                'mode_paiement_id' => $data['mode_paiement_id'],
                 'adresse_livraison' => $data['adresse_livraison'],
                 'ville_livraison' => $data['ville_livraison'],
                 'pays_livraison' => $data['pays_livraison'],

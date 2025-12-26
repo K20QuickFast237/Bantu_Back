@@ -109,4 +109,9 @@ class ProfessionnelProfileController extends Controller
             'data' => $professionnel->fresh(),
         ]);
     }
+
+    public function registerFreelancer(Request $request)
+    {
+        // Implementation for registering a freelancer profile
+    }
 }
