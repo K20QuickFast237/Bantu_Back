@@ -13,7 +13,7 @@ class CommandeController extends Controller
 {
     public function index()
     {
-        $commandes = Auth::user()->acheteur->commandes()->get();
+        $commandes = Auth::user()->acheteur->commandes()->with('produits')->get();
         return CommandeResource::collection($commandes);
     }
     public function listAll()
