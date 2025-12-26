@@ -30,6 +30,7 @@ class CommandeService
                 'adresse_livraison' => $data['adresse_livraison'],
                 'ville_livraison' => $data['ville_livraison'],
                 'pays_livraison' => $data['pays_livraison'],
+                'tel_livraison' => $data['tel_livraison'],
                 'statut' => 'en_cours',
             ]);
 

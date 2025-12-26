@@ -12,7 +12,7 @@ class Commande extends Model
     protected $table = 'mkt_commandes';
     protected $fillable = [
         'acheteur_id', 'option_livraison_id', 'mode_paiement_id',
-        'statut', 'adresse_livraison', 'ville_livraison', 'pays_livraison',
+        'statut', 'adresse_livraison', 'ville_livraison', 'pays_livraison', 'tel_livraison',
         'sous_total', 'frais_livraison', 'total', 'coupon_id', 'reduction', 'net_a_payer'
     ];
 

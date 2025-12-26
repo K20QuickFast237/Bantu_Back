@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('adresse_livraison')->nullable();
             $table->string('ville_livraison')->nullable();
             $table->string('pays_livraison')->nullable();
+            $table->string('tel_livraison')->nullable();
 
             $table->decimal('sous_total', 12, 2)->default(0);
             $table->decimal('frais_livraison', 12, 2)->default(0);

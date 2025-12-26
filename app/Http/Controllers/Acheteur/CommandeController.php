@@ -42,6 +42,7 @@ class CommandeController extends Controller
             'pays_livraison' => 'sometimes|nullable|string',
             'ville_livraison' => 'sometimes|nullable|string',
             'adresse_livraison' => 'sometimes|nullable|string',
+            'tel_livraison' => 'sometimes|nullable|string',
             'coupon_code' => 'nullable|string'
         ]);
 

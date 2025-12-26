@@ -19,6 +19,7 @@ class CommandeResource extends JsonResource
             'adresse_livraison' => $this->adresse_livraison,
             'ville_livraison' => $this->ville_livraison,
             'pays_livraison' => $this->pays_livraison,
+            'tel_livraison' => $this->tel_livraison,
             'sous_total' => $this->sous_total,
             'frais_livraison' => $this->frais_livraison,
             'total' => $this->total,
