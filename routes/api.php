@@ -419,7 +419,7 @@ Route::middleware(['auth:api'])->group(function () {
     });
 });
 
-
+Route::get('categorie-produits', [CategorieProduitController::class, 'index']);
 /*
 |--------------------------------------------------------------------------
 | ROUTES VENDEUR (protégées)
@@ -462,7 +462,7 @@ Route::middleware('auth:api')->apiResource('attribut-valeurs', AttributValeurCon
     'index','store','show','update','destroy'
 ]);
 Route::middleware('auth:api')->apiResource('categorie-produits', CategorieProduitController::class)->only([
-    'index','store','show','update','destroy'
+    'store','show','update','destroy'
 ]);
 Route::middleware('auth:api')->apiResource('mode-paiements', ModePaiementController::class)->only([
     'index','store','update','destroy'
