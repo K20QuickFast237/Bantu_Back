@@ -26,6 +26,8 @@ use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\DeliveryMethodController;
 use App\Http\Controllers\Api\CvController;
 use App\Http\Controllers\Api\PosteRechercheController;
+use App\Http\Controllers\Api\FreelancerController;
+use App\Http\Controllers\Api\MissionController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 // use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -115,6 +117,7 @@ Route::get('matching/job/{offreId}', [MatchingController::class, 'jobMatches']);
 Route::prefix('conversations')->middleware('auth:api')->group(function () {
     Route::get('/', [\App\Http\Controllers\Api\ConversationController::class, 'index']);
     Route::post('/', [\App\Http\Controllers\Api\ConversationController::class, 'store']);
+    Route::post('/with-freelancer', [\App\Http\Controllers\Api\ConversationController::class, 'createWithFreelancer']);
     Route::get('/{id}', [\App\Http\Controllers\Api\ConversationController::class, 'show']);
 });
 
@@ -124,6 +127,37 @@ Route::prefix('messages')->middleware('auth:api')->group(function () {
     Route::post('/{conversationId}', [\App\Http\Controllers\Api\MessageController::class, 'store']);
     Route::put('/{message}', [\App\Http\Controllers\Api\MessageController::class, 'update']);
     Route::delete('/{message}', [\App\Http\Controllers\Api\MessageController::class, 'destroy']);
+});
+
+// Routes pour les freelancers
+Route::prefix('freelancers')->group(function () {
+    // Routes publiques
+    Route::get('/{id}', [\App\Http\Controllers\Api\FreelancerController::class, 'show']);
+    Route::get('/{id}/realisations', [\App\Http\Controllers\Api\FreelancerController::class, 'realisations']);
+    
+    // Routes protégées (freelancer connecté)
+    Route::middleware('auth:api')->group(function () {
+        Route::get('/me/profile', [FreelancerController::class, 'myProfile']);
+        Route::get('/me/realisations', [FreelancerController::class, 'realisations']);
+        Route::post('/realisations', [FreelancerController::class, 'storeRealisation']);
+        Route::put('/realisations/{realisationId}', [FreelancerController::class, 'updateRealisation']);
+        Route::post('/realisations/{realisationId}', [FreelancerController::class, 'updateRealisation']);
+        Route::delete('/realisations/{realisationId}', [FreelancerController::class, 'destroyRealisation']);
+    });
+});
+
+// Routes pour les missions
+Route::prefix('missions')->middleware('auth:api')->group(function () {
+    // Route::post('/', fn() => response()->json(['message' => 'Not implemented'], 501));
+    Route::post('/', [MissionController::class, 'store']);
+    Route::get('/me', [MissionController::class, 'myMissions']);
+    Route::get('/freelancer', [MissionController::class, 'freelancerMissions']);
+    Route::get('/{id}', [MissionController::class, 'show']);
+    Route::put('/{missionId}/statut', [MissionController::class, 'updateStatus']);
+    Route::post('/{missionId}/medias', [MissionController::class, 'addMedia']);
+    Route::delete('/{missionId}/medias/{mediaId}', [MissionController::class, 'deleteMedia']);
+    Route::post('/{missionId}/note', [MissionController::class, 'leaveNote']);
+    Route::put('/notes/{noteId}', [MissionController::class, 'updateNote']);
 });
 
 
@@ -187,6 +221,9 @@ Route::middleware('auth:api')->group(function () {
 
         Route::post('/professionnel', [ProfessionnelProfileController::class, 'store']);
         Route::put('/professionnel/{professionnel}', [ProfessionnelProfileController::class, 'update']);
+        
+        Route::post('/freelancer', [FreelancerController::class, 'storeOrUpdate']);
+        Route::put('/freelancer', [FreelancerController::class, 'storeOrUpdate']);
     });
 
     Route::middleware('auth:api')->group(function () {

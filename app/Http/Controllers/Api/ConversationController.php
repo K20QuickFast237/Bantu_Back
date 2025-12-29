@@ -72,4 +72,42 @@ class ConversationController extends Controller
 
         return response()->json($conversation);
     }
+
+    /**
+     * Créer une conversation avec un freelancer (en utilisant freelancer_id)
+     */
+    public function createWithFreelancer(Request $request)
+    {
+        $request->validate([
+            'freelancer_id' => 'required|exists:freelancers,id',
+        ]);
+
+        $user = auth()->user();
+        $freelancer = \App\Models\Freelancer::with('user')->findOrFail($request->freelancer_id);
+
+        if (!$freelancer->user) {
+            return response()->json(['error' => 'Le freelancer n\'a pas de compte utilisateur associé'], 404);
+        }
+
+        $userId = $user->id;
+        $freelancerUserId = $freelancer->user->id;
+
+        // Vérifier si une conversation entre ces 2 utilisateurs existe déjà
+        $conversation = Conversation::whereHas('participants', fn($q) => $q->where('users.id', $userId))
+            ->whereHas('participants', fn($q) => $q->where('users.id', $freelancerUserId))
+            ->first();
+
+        if (!$conversation) {
+            $conversation = Conversation::create();
+
+            $conversation->participants()->attach([
+                $userId => ['joined_at' => now()],
+                $freelancerUserId => ['joined_at' => now()],
+            ]);
+
+            event(new \App\Events\ConversationCreated($conversation));
+        }
+
+        return response()->json($conversation->load('participants'));
+    }
 }
