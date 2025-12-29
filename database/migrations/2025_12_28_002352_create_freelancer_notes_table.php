@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('freelancer_id')->constrained('freelancers')->onDelete('cascade');
             $table->foreignId('client_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('mission_id')->constrained('missions')->onDelete('cascade');
+            $table->foreignId('mission_id')->constrained('missions')->onDelete('cascade')->nullable();
             $table->string('score');
             $table->text('description');
             $table->timestamps();
