@@ -19,7 +19,11 @@ class CommandeService
                 throw new \Exception("Le panier est vide.");
             }
 
-            $commande = $acheteur->commandes()->where('statut', 'en_attente')->first();
+            $commande = $acheteur->commandes()
+                ->where('statut', 'en_attente')
+                ->orWhere('statut', 'en_cours')
+                ->first();
+                
             if (!$commande) {
                 throw new \Exception("Aucune commande en attente trouvée pour cet acheteur.");
             }
@@ -58,9 +62,9 @@ class CommandeService
             $commande->total = $commande->sous_total + $commande->frais_livraison;
             $commande->save();
 
-            // Vider le panier
-            $panierModel = new Panier();
-            $panierModel->flushPanier($acheteur);
+            // Vider le panier Non à faire seulement après le paiement de la commande
+            // $panierModel = new Panier();
+            // $panierModel->flushPanier($acheteur);
 
             return $commande;
         });

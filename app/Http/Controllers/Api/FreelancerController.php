@@ -26,6 +26,7 @@ class FreelancerController extends Controller
         $request->validate([
             'nom_complet' => 'required|string|max:255',
             'titre_pro' => 'required|string|max:255',
+            'description' => 'sometimes|nullable|string',
             'email_pro' => 'required|email|unique:freelancers,email_pro,' . ($freelancer ? $freelancer->id : 'NULL') . ',id',
             'telephone' => 'sometimes|nullable|string|max:20',
             'adresse' => 'sometimes|nullable|string|max:255',
@@ -36,7 +37,7 @@ class FreelancerController extends Controller
         ]);
 
         $data = $request->only([
-            'nom_complet', 'titre_pro', 'email_pro', 'telephone', 
+            'nom_complet', 'titre_pro', 'description', 'email_pro', 'telephone', 
             'adresse', 'ville', 'pays'
         ]);
 

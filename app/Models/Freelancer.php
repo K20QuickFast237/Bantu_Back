@@ -15,6 +15,7 @@ class Freelancer extends Model
         'user_id',
         'nom_complet',
         'titre_pro',
+        'description',
         'email_pro',
         'telephone',
         'adresse',
