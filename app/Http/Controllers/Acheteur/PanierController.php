@@ -13,6 +13,7 @@ use App\Models\CommandeProduit;
 use App\Models\ProduitAttributValeur;
 use App\Models\Produit;
 use App\Models\CommandeProduitAttributValeur;
+use Illuminate\Support\Facades\DB;
 
 class PanierController extends Controller
 {
@@ -33,6 +34,7 @@ class PanierController extends Controller
 
         // Vérifier si ce produit est déjà dans le panier
         $existingPanierItem = Auth::user()->acheteur->paniers()->where('produit_id', $data['produit_id'])->first();
+        DB::beginTransaction();
         if ($existingPanierItem) {
             $commande = Commande::find($existingPanierItem->commandeProduit->commande_id);
             CommandeProduit::where('id', $existingPanierItem->commande_produit_id)->delete();
@@ -80,6 +82,7 @@ class PanierController extends Controller
         $panierItem->prix_unitaire = $data['prix_unitaire'];
         $panierItem->prix_total = $data['quantite'] * $data['prix_unitaire'];
 
+        DB::commit();
         return response()->json([
             'message' => 'Produit ajouté au panier', 
             'item' => new PanierResource($panierItem)

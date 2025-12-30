@@ -59,7 +59,8 @@ class CommandeService
             $commande->save();
 
             // Vider le panier
-            // $acheteur->panier()->delete();
+            $panierModel = new Panier();
+            $panierModel->flushPanier($acheteur);
 
             return $commande;
         });
