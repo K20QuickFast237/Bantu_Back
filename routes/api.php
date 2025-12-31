@@ -115,25 +115,26 @@ Route::get('matching/job/{offreId}', [MatchingController::class, 'jobMatches']);
 
 // Routes pour les conversations
 Route::prefix('conversations')->middleware('auth:api')->group(function () {
-    Route::get('/', [\App\Http\Controllers\Api\ConversationController::class, 'index']);
-    Route::post('/', [\App\Http\Controllers\Api\ConversationController::class, 'store']);
-    Route::post('/with-freelancer', [\App\Http\Controllers\Api\ConversationController::class, 'createWithFreelancer']);
-    Route::get('/{id}', [\App\Http\Controllers\Api\ConversationController::class, 'show']);
+    Route::get('/', [ConversationController::class, 'index']);
+    Route::post('/', [ConversationController::class, 'store']);
+    Route::post('/with-freelancer', [ConversationController::class, 'createWithFreelancer']);
+    Route::get('/{id}', [ConversationController::class, 'show']);
 });
 
 
 // Routes  pour les messages
 Route::prefix('messages')->middleware('auth:api')->group(function () {
-    Route::post('/{conversationId}', [\App\Http\Controllers\Api\MessageController::class, 'store']);
-    Route::put('/{message}', [\App\Http\Controllers\Api\MessageController::class, 'update']);
-    Route::delete('/{message}', [\App\Http\Controllers\Api\MessageController::class, 'destroy']);
+    Route::post('/{conversationId}', [MessageController::class, 'store']);
+    Route::put('/{message}', [MessageController::class, 'update']);
+    Route::delete('/{message}', [MessageController::class, 'destroy']);
 });
 
 // Routes pour les freelancers
 Route::prefix('freelancers')->group(function () {
     // Routes publiques
-    Route::get('/{id}', [\App\Http\Controllers\Api\FreelancerController::class, 'show']);
-    Route::get('/{id}/realisations', [\App\Http\Controllers\Api\FreelancerController::class, 'realisations']);
+    Route::get('/', [FreelancerController::class, 'index']);
+    Route::get('/{id}', [FreelancerController::class, 'show']);
+    Route::get('/{id}/realisations', [FreelancerController::class, 'realisations']);
     
     // Routes protégées (freelancer connecté)
     Route::middleware('auth:api')->group(function () {

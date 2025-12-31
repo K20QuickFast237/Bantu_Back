@@ -17,6 +17,17 @@ use Illuminate\Support\Facades\DB;
 class FreelancerController extends Controller
 {
     /**
+     * Lister tous les freelancers (public)
+     */
+    public function index(){
+        // $freelancers = Freelancer::with(['user', 'realisations.medias', 'notes'])->get();
+        $freelancers = Freelancer::with(['user', 'notes'])->get();
+
+        return response()->json([
+            'data' => FreelancerResource::collection($freelancers),
+        ]);
+    }
+    /**
      * Créer ou mettre à jour le profil freelancer
      */
     public function storeOrUpdate(Request $request)
@@ -60,7 +71,7 @@ class FreelancerController extends Controller
 
         return response()->json([
             'message' => 'Profil freelancer ' . ($freelancer->wasRecentlyCreated ? 'créé' : 'mis à jour') . ' avec succès',
-            'data' => new FreelancerResource($freelancer->load('user', 'realisations.images', 'notes')),
+            'data' => new FreelancerResource($freelancer->load('user', 'realisations.medias', 'notes')),
         ], $freelancer->wasRecentlyCreated ? 201 : 200);
     }
 
@@ -77,7 +88,7 @@ class FreelancerController extends Controller
         }
 
         return response()->json([
-            'data' => new FreelancerResource($freelancer->load('user', 'realisations.images', 'notes', 'missions')),
+            'data' => new FreelancerResource($freelancer->load('user', 'realisations.medias', 'notes', 'missions')),
         ]);
     }
 
@@ -86,7 +97,7 @@ class FreelancerController extends Controller
      */
     public function show($id)
     {
-        $freelancer = Freelancer::with(['user', 'realisations.images', 'notes'])
+        $freelancer = Freelancer::with(['user', 'realisations.medias', 'notes'])
             ->findOrFail($id);
 
         return response()->json([
@@ -212,9 +223,9 @@ class FreelancerController extends Controller
             'date_realisation' => 'sometimes|required|date',
             'localisation' => 'sometimes|string|max:255',
             'lien' => 'sometimes|url',
-            'images.*' => 'sometimes|image|max:2048',
-            'images_to_delete' => 'nullable|array',
-            'images_to_delete.*' => 'exists:realisation_images,id',
+            // 'images.*' => 'sometimes|image|max:2048',
+            'medias_to_delete' => 'nullable|array',
+            'medias_to_delete.*' => 'exists:realisation_medias,id',
         ]);
 
         DB::beginTransaction();
@@ -224,29 +235,29 @@ class FreelancerController extends Controller
             ]));
 
             // Supprimer les images sélectionnées
-            if ($request->has('images_to_delete')) {
-                $imagesToDelete = RealisationImage::whereIn('id', $request->images_to_delete)
+            if ($request->has('medias_to_delete')) {
+                $mediasToDelete = RealisationMedia::whereIn('id', $request->medias_to_delete)
                     ->where('realisation_id', $realisation->id)
                     ->get();
                 
-                foreach ($imagesToDelete as $image) {
-                    if ($image->image && Storage::disk('public')->exists($image->image)) {
-                        Storage::disk('public')->delete($image->image);
+                foreach ($mediasToDelete as $media) {
+                    if ($media->media_path && Storage::disk('public')->exists($media->media_path)) {
+                        Storage::disk('public')->delete($media->media_path);
                     }
-                    $image->delete();
+                    $media->delete();
                 }
             }
 
             // Ajouter de nouvelles images
-            if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $image) {
-                    $path = $image->store('realisations', 'public');
-                    RealisationImage::create([
-                        'realisation_id' => $realisation->id,
-                        'image' => $path,
-                    ]);
-                }
-            }
+            // if ($request->hasFile('images')) {
+            //     foreach ($request->file('images') as $image) {
+            //         $path = $image->store('realisations', 'public');
+            //         RealisationImage::create([
+            //             'realisation_id' => $realisation->id,
+            //             'image' => $path,
+            //         ]);
+            //     }
+            // }
 
             DB::commit();
 
@@ -276,9 +287,9 @@ class FreelancerController extends Controller
             ->findOrFail($realisationId);
 
         // Supprimer les images associées
-        foreach ($realisation->images as $image) {
-            if ($image->image && Storage::disk('public')->exists($image->image)) {
-                Storage::disk('public')->delete($image->image);
+        foreach ($realisation->medias as $media) {
+            if ($media->media_path && Storage::disk('public')->exists($media->media_path)) {
+                Storage::disk('public')->delete($media->media_path);
             }
         }
 
@@ -299,7 +310,7 @@ class FreelancerController extends Controller
         }
 
         $freelancer = Freelancer::findOrFail($freelancerId);
-        $realisations = $freelancer->realisations()->with('images')->get();
+        $realisations = $freelancer->realisations()->with('medias')->get();
 
         return response()->json([
             'data' => RealisationResource::collection($realisations),
