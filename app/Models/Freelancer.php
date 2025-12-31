@@ -23,9 +23,14 @@ class Freelancer extends Model
         'pays',
         'photo_profil',
         'photo_couverture',
+        'competences',
     ];
 
     public $timestamps = false;
+
+    protected $casts = [
+        'competences' => 'array',
+    ];
 
     public function user()
     {

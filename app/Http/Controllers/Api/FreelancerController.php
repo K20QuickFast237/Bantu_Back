@@ -39,6 +39,8 @@ class FreelancerController extends Controller
             'nom_complet' => 'required|string|max:255',
             'titre_pro' => 'required|string|max:255',
             'description' => 'sometimes|nullable|string',
+            'competences' => 'sometimes|nullable|array',
+            'competences.*' => 'required|string|max:255',
             'email_pro' => 'required|email|unique:freelancers,email_pro,' . ($freelancer ? $freelancer->id : 'NULL') . ',id',
             'telephone' => 'sometimes|nullable|string|max:20',
             'adresse' => 'sometimes|nullable|string|max:255',
@@ -50,8 +52,19 @@ class FreelancerController extends Controller
 
         $data = $request->only([
             'nom_complet', 'titre_pro', 'description', 'email_pro', 'telephone', 
-            'adresse', 'ville', 'pays'
+            'adresse', 'ville', 'pays', 'competences',
         ]);
+        $data['competences'] = $request->input('competences', []);
+        // dd($request->all());
+        
+        // Gérer le formatage CamelCase des compétences
+        if (isset($data['competences']) && is_array($data['competences'])) {
+            $data['competences'] = array_map(function($competence) {
+                return ucwords(strtolower(trim($competence)));
+            }, $data['competences']);
+        }
+
+        // dd($data);
 
         // Gérer les photos
         if ($request->hasFile('photo_profil')) {

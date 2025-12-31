@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('adresse')->nullable();
             $table->string('ville')->nullable();
             $table->string('pays')->nullable();
+            $table->json('competences')->nullable();
             $table->string('photo_profil')->nullable();
             $table->string('photo_couverture')->nullable();
             // $table->timestamps();
