@@ -140,8 +140,8 @@ Route::prefix('freelancers')->group(function () {
         Route::get('/me/profile', [FreelancerController::class, 'myProfile']);
         Route::get('/me/realisations', [FreelancerController::class, 'realisations']);
         Route::post('/realisations', [FreelancerController::class, 'storeRealisation']);
-        Route::post('/realisations/{realisationId}/medias', [MissionController::class, 'addRealisationMedia']);
-        Route::delete('/realisations/{realisationId}/medias/{mediaId}', [MissionController::class, 'deleteRealisationMedia']);
+        Route::post('/realisations/{realisationId}/medias', [FreelancerController::class, 'addRealisationMedia']);
+        Route::delete('/realisations/{realisationId}/medias/{mediaId}', [FreelancerController::class, 'deleteRealisationMedia']);
         Route::put('/realisations/{realisationId}', [FreelancerController::class, 'updateRealisation']);
         Route::post('/realisations/{realisationId}', [FreelancerController::class, 'updateRealisation']);
         Route::delete('/realisations/{realisationId}', [FreelancerController::class, 'destroyRealisation']);
