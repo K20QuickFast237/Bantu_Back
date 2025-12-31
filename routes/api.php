@@ -140,6 +140,8 @@ Route::prefix('freelancers')->group(function () {
         Route::get('/me/profile', [FreelancerController::class, 'myProfile']);
         Route::get('/me/realisations', [FreelancerController::class, 'realisations']);
         Route::post('/realisations', [FreelancerController::class, 'storeRealisation']);
+        Route::post('/realisations/{realisationId}/medias', [MissionController::class, 'addRealisationMedia']);
+        Route::delete('/realisations/{realisationId}/medias/{mediaId}', [MissionController::class, 'deleteRealisationMedia']);
         Route::put('/realisations/{realisationId}', [FreelancerController::class, 'updateRealisation']);
         Route::post('/realisations/{realisationId}', [FreelancerController::class, 'updateRealisation']);
         Route::delete('/realisations/{realisationId}', [FreelancerController::class, 'destroyRealisation']);
@@ -148,7 +150,6 @@ Route::prefix('freelancers')->group(function () {
 
 // Routes pour les missions
 Route::prefix('missions')->middleware('auth:api')->group(function () {
-    // Route::post('/', fn() => response()->json(['message' => 'Not implemented'], 501));
     Route::post('/', [MissionController::class, 'store']);
     Route::get('/me', [MissionController::class, 'myMissions']);
     Route::get('/freelancer', [MissionController::class, 'freelancerMissions']);

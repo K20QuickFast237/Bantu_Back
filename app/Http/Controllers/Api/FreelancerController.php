@@ -8,6 +8,7 @@ use App\Http\Resources\RealisationResource;
 use App\Models\Freelancer;
 use App\Models\Realisation;
 use App\Models\RealisationImage;
+use App\Models\RealisationMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -111,7 +112,9 @@ class FreelancerController extends Controller
             'date_realisation' => 'required|date',
             'localisation' => 'sometimes|nullable|string|max:255',
             'lien' => 'sometimes|nullable|url',
-            'images.*' => 'nullable|image|max:2048',
+            'images.*' => 'nullable|image|max:10240', // max 10MB par image
+            'documents.*' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,txt|max:10240', // max 10MB par document
+            'videos.*' => 'nullable|file|mimes:mp4,avi,mov,wmv,flv,webm|max:102400', // max 100MB par vidéo
         ]);
 
         DB::beginTransaction();
@@ -127,11 +130,51 @@ class FreelancerController extends Controller
 
             // Upload des images
             if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $image) {
-                    $path = $image->store('realisations', 'public');
-                    RealisationImage::create([
+                $images = $request->file('images');
+                if (!is_array($images)) {
+                    $images = [$images];
+                }
+
+                foreach ($images as $image) {
+                    $path = $image->store('realisations/images', 'public');
+                    RealisationMedia::create([
                         'realisation_id' => $realisation->id,
-                        'image' => $path,
+                        'media_type' => 'image',
+                        'media_path' => $path,
+                    ]);
+                }
+            }
+
+            // Upload des documents
+            if ($request->hasFile('documents')) {
+                $documents = $request->file('documents');
+                if (!is_array($documents)) {
+                    $documents = [$documents];
+                }
+
+                foreach ($documents as $document) {
+                    $path = $document->store('realisations/documents', 'public');
+                    RealisationMedia::create([
+                        'realisation_id' => $realisation->id,
+                        'media_type' => 'document',
+                        'media_path' => $path,
+                    ]);
+                }
+            }
+
+            // Upload des vidéos
+            if ($request->hasFile('videos')) {
+                $videos = $request->file('videos');
+                if (!is_array($videos)) {
+                    $videos = [$videos];
+                }
+
+                foreach ($videos as $video) {
+                    $path = $video->store('realisations/videos', 'public');
+                    RealisationMedia::create([
+                        'realisation_id' => $realisation->id,
+                        'media_type' => 'video',
+                        'media_path' => $path,
                     ]);
                 }
             }
@@ -140,7 +183,7 @@ class FreelancerController extends Controller
 
             return response()->json([
                 'message' => 'Réalisation créée avec succès',
-                'data' => new RealisationResource($realisation->load('images')),
+                'data' => new RealisationResource($realisation->load('medias')),
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -260,6 +303,125 @@ class FreelancerController extends Controller
 
         return response()->json([
             'data' => RealisationResource::collection($realisations),
+        ]);
+    }
+
+    
+    /**
+     * Ajouter des médias à une réalisation existante
+     */
+    public function addRealisationMedia(Request $request, $realisationId)
+    {
+        $user = Auth::user();
+        $realisation = Realisation::findOrFail($realisationId);
+
+        // Vérifier que l'utilisateur est le freelancer de cette réalisation
+        if ($realisation->freelancer_id !== $user->freelancer->id) {
+            return response()->json(['error' => 'Accès refusé'], 403);
+        }
+
+        // Forcer le traitement comme requête JSON pour éviter les redirections
+        // $request->headers->set('Accept', 'application/json');
+
+        try {
+            $request->validate([
+                'images.*' => 'nullable|image|max:10240', // max 10MB par image
+                'documents.*' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,txt|max:10240', // max 10MB par document
+                'videos.*' => 'nullable|file|mimes:mp4,avi,mov,wmv,flv,webm|max:102400', // max 100MB par vidéo
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'Erreur de validation',
+                'errors' => $e->errors()
+            ], 422);
+        }
+
+        if (!$request->hasFile('images') && !$request->hasFile('documents') && !$request->hasFile('videos')) {
+            return response()->json(['error' => 'Aucun fichier fourni'], 400);
+        }
+
+        // Upload des images
+        if ($request->hasFile('images')) {
+            $images = $request->file('images');
+            if (!is_array($images)) {
+                $images = [$images];
+            }
+
+            foreach ($images as $image) {
+                $path = $image->store('realisations/images', 'public');
+                RealisationMedia::create([
+                    'realisation_id' => $realisation->id,
+                    'media_type' => 'image',
+                    'media_path' => $path,
+                ]);
+            }
+        }
+
+        // Upload des documents
+        if ($request->hasFile('documents')) {
+            $documents = $request->file('documents');
+            if (!is_array($documents)) {
+                $documents = [$documents];
+            }
+
+            foreach ($documents as $document) {
+                $path = $document->store('realisations/documents', 'public');
+                RealisationMedia::create([
+                    'realisation_id' => $realisation->id,
+                    'media_type' => 'document',
+                    'media_path' => $path,
+                ]);
+            }
+        }
+
+        // Upload des vidéos
+        if ($request->hasFile('videos')) {
+            $videos = $request->file('videos');
+            if (!is_array($videos)) {
+                $videos = [$videos];
+            }
+
+            foreach ($videos as $video) {
+                $path = $video->store('realisations/videos', 'public');
+                RealisationMedia::create([
+                    'realisation_id' => $realisation->id,
+                    'media_type' => 'video',
+                    'media_path' => $path,
+                ]);
+            }
+        }
+
+        return response()->json([
+            'message' => 'Médias ajoutés avec succès',
+            'data' => new RealisationResource($realisation->load('medias')),
+        ]);
+    }
+
+    /**
+     * Supprimer un média d'une mission
+     */
+    public function deleteRealisationMedia($realisationId, $mediaId)
+    {
+        $user = Auth::user();
+        $realisation = Realisation::findOrFail($realisationId);
+
+        // Vérifier que l'utilisateur est le freelancer de cette réalisation
+        if ($realisation->freelancer_id !== $user->freelancer->id) {
+            return response()->json(['error' => 'Accès refusé'], 403);
+        }
+
+        $media = RealisationMedia::where('realisation_id', $realisation->id)
+            ->findOrFail($mediaId);
+
+        // Supprimer le fichier du storage
+        if ($media->media_path && Storage::disk('public')->exists($media->media_path)) {
+            Storage::disk('public')->delete($media->media_path);
+        }
+
+        $media->delete();
+
+        return response()->json([
+            'message' => 'Média supprimé avec succès',
         ]);
     }
 }

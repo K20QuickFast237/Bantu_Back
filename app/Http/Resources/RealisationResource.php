@@ -23,13 +23,29 @@ class RealisationResource extends JsonResource
             'date_realisation' => $this->date_realisation,
             'localisation' => $this->localisation,
             'lien' => $this->lien,
-            'images' => $this->whenLoaded('images', function() {
-                return $this->images->map(function($image) {
+            // 'images' => $this->whenLoaded('images', function() {
+            //     return $this->images->map(function($image) {
+            //         return [
+            //             'id' => $image->id,
+            //             'image' => getLinkToFile($image->image),
+            //         ];
+            //     });
+            // }),
+            'medias' => $this->whenLoaded('medias', function() {
+                $medias = $this->medias->map(function($media) {
                     return [
-                        'id' => $image->id,
-                        'image' => getLinkToFile($image->image),
+                        'id' => $media->id,
+                        'media_type' => $media->media_type,
+                        'media_path' => getLinkToFile($media->media_path),
                     ];
                 });
+
+                // Classer les médias par type
+                return [
+                    'images' => $medias->where('media_type', 'image')->values(),
+                    'documents' => $medias->where('media_type', 'document')->values(),
+                    'videos' => $medias->where('media_type', 'video')->values(),
+                ];
             }),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

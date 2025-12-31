@@ -28,6 +28,7 @@ class UserResource extends JsonResource
             'email_verified_at' => $this->email_verified_at,
             'acheteur' => $this->acheteur ? new SimpleAcheteurResource($this->acheteur) : null,
             'vendeur' => $this->vendeur ? new SimpleVendeurResource($this->vendeur) : null,
+            'freelancer' => $this->freelancer ? new FreelancerResource($this->freelancer) : null,
         ];
         if ($status = $this->isCandidat() || $this->isRecruteur()) {
             $user['profilCompleted'] = $status;

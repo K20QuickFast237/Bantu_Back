@@ -22,8 +22,8 @@ class Realisation extends Model
         return $this->belongsTo(Freelancer::class);
     }
 
-    public function images(): HasMany
+    public function medias()
     {
-        return $this->hasMany(RealisationImage::class);
+        return $this->hasMany(RealisationMedia::class);
     }
 }
