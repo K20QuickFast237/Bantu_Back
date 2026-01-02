@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CompetenceResource;
 use App\Http\Resources\FreelancerResource;
 use App\Http\Resources\RealisationResource;
-use App\Models\competences;
+use App\Models\Competences;
 use App\Models\Freelancer;
 use App\Models\FrelancerCompetences;
 use App\Models\Realisation;
@@ -63,7 +63,7 @@ class FreelancerController extends Controller
         if (isset($competences) && is_array($competences)) {
             $competences = array_map(function($competence) {
                 $competenceName = ucwords(strtolower(trim($competence)));
-                $competence = competences::firstOrCreate(['nom' => $competenceName]);
+                $competence = Competences::firstOrCreate(['nom' => $competenceName]);
                 return $competence->id;
             }, $competences);
         }
