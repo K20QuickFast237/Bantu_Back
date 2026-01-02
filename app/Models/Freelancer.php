@@ -30,7 +30,7 @@ class Freelancer extends Model
 
     public function competences()
     {
-        return $this->belongsToMany(competences::class, 'freelancer_competences', 'freelancer_id', 'competence_id')->withPivot('niveau');
+        return $this->belongsToMany(Competences::class, 'freelancer_competences', 'freelancer_id', 'competence_id')->withPivot('niveau');
     }
 
     public function user()

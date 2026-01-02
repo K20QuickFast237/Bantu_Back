@@ -467,14 +467,14 @@ class FreelancerController extends Controller
 
         $data['nom'] = ucwords(strtolower(trim($data['nom'])));
         try {
-            competences::create($data);
+            Competences::create($data);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['message' => 'Cette compétence existe déjà.'], 409);
         }
 
         return response()->json([
             'message' => 'Compétence ajoutée avec succès',
-            'data' => competences::where('nom', $data['nom'])->first(),
+            'data' => Competences::where('nom', $data['nom'])->first(),
         ]);
     }
 
@@ -484,7 +484,7 @@ class FreelancerController extends Controller
     public function listCompetences()
     {
         return response()->json([
-            'data' => competences::all(),
+            'data' => Competences::all(),
         ]);
     }
 
@@ -495,7 +495,7 @@ class FreelancerController extends Controller
     {
         // Normalement autorisé uniquement pour les admins
 
-        competences::findOrFail($competenceId)->delete();
+        Competences::findOrFail($competenceId)->delete();
 
         return response()->json([
             'message' => 'Compétence supprimée avec succès',
@@ -541,7 +541,7 @@ class FreelancerController extends Controller
 
         $data['nom'] = ucwords(strtolower(trim($data['nom'])));
         
-        $competence = competences::firstOrCreate([
+        $competence = Competences::firstOrCreate([
             'nom' => $data['nom'],
             'description' => $data['description'] ?? '',
         ]);
