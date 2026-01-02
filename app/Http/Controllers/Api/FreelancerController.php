@@ -43,7 +43,7 @@ class FreelancerController extends Controller
             'titre_pro' => 'required|string|max:255',
             'description' => 'sometimes|nullable|string',
             'competences' => 'sometimes|nullable|array',
-            'competences.*' => 'required|exists:competences,id',
+            'competences.*' => 'required|string',
             'email_pro' => 'required|email|unique:freelancers,email_pro,' . ($freelancer ? $freelancer->id : 'NULL') . ',id',
             'telephone' => 'sometimes|nullable|string|max:20',
             'adresse' => 'sometimes|nullable|string|max:255',
@@ -55,19 +55,18 @@ class FreelancerController extends Controller
 
         $data = $request->only([
             'nom_complet', 'titre_pro', 'description', 'email_pro', 'telephone', 
-            'adresse', 'ville', 'pays', 'competences',
+            'adresse', 'ville', 'pays',
         ]);
-        $data['competences'] = $request->input('competences', []);
-        dd($request->all());
-        dd($data);
+        $competences = $request->input('competences', []);
         
-        // Gérer le formatage CamelCase des compétences
-        if (isset($data['competences']) && is_array($data['competences'])) {
-            $data['competences'] = array_map(function($competence) {
-                return ucwords(strtolower(trim($competence)));
-            }, $data['competences']);
+        
+        if (isset($competences) && is_array($competences)) {
+            $competences = array_map(function($competence) {
+                $competenceName = ucwords(strtolower(trim($competence)));
+                $competence = competences::firstOrCreate(['nom' => $competenceName]);
+                return $competence->id;
+            }, $competences);
         }
-
 
         // Gérer les photos
         if ($request->hasFile('photo_profil')) {
@@ -85,9 +84,12 @@ class FreelancerController extends Controller
             $freelancer = Freelancer::create($data);
         }
 
+        // Associer les competences
+        $freelancer->competences()->sync($competences);
+
         return response()->json([
             'message' => 'Profil freelancer ' . ($freelancer->wasRecentlyCreated ? 'créé' : 'mis à jour') . ' avec succès',
-            'data' => new FreelancerResource($freelancer->load('user', 'realisations.medias', 'notes')),
+            'data' => new FreelancerResource($freelancer->load('user', 'competences', 'realisations.medias', 'notes')),
         ], $freelancer->wasRecentlyCreated ? 201 : 200);
     }
 
