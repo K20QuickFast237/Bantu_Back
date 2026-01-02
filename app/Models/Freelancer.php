@@ -23,14 +23,15 @@ class Freelancer extends Model
         'pays',
         'photo_profil',
         'photo_couverture',
-        'competences',
+        // 'competences',
     ];
 
     public $timestamps = false;
 
-    protected $casts = [
-        'competences' => 'array',
-    ];
+    public function competences()
+    {
+        return $this->belongsToMany(competences::class, 'freelancer_competences', 'freelancer_id', 'competence_id')->withPivot('niveau');
+    }
 
     public function user()
     {

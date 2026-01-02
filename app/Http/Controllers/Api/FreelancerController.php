@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CompetenceResource;
 use App\Http\Resources\FreelancerResource;
 use App\Http\Resources\RealisationResource;
+use App\Models\competences;
 use App\Models\Freelancer;
+use App\Models\FrelancerCompetences;
 use App\Models\Realisation;
 use App\Models\RealisationImage;
 use App\Models\RealisationMedia;
@@ -40,7 +43,7 @@ class FreelancerController extends Controller
             'titre_pro' => 'required|string|max:255',
             'description' => 'sometimes|nullable|string',
             'competences' => 'sometimes|nullable|array',
-            'competences.*' => 'required|string|max:255',
+            'competences.*' => 'required|exists:competences,id',
             'email_pro' => 'required|email|unique:freelancers,email_pro,' . ($freelancer ? $freelancer->id : 'NULL') . ',id',
             'telephone' => 'sometimes|nullable|string|max:20',
             'adresse' => 'sometimes|nullable|string|max:255',
@@ -55,7 +58,8 @@ class FreelancerController extends Controller
             'adresse', 'ville', 'pays', 'competences',
         ]);
         $data['competences'] = $request->input('competences', []);
-        // dd($request->all());
+        dd($request->all());
+        dd($data);
         
         // Gérer le formatage CamelCase des compétences
         if (isset($data['competences']) && is_array($data['competences'])) {
@@ -64,7 +68,6 @@ class FreelancerController extends Controller
             }, $data['competences']);
         }
 
-        // dd($data);
 
         // Gérer les photos
         if ($request->hasFile('photo_profil')) {
@@ -95,13 +98,13 @@ class FreelancerController extends Controller
     {
         $user = Auth::user();
         $freelancer = $user->freelancer;
-
+        
         if (!$freelancer) {
             return response()->json(['message' => 'Profil freelancer non trouvé'], 404);
         }
 
         return response()->json([
-            'data' => new FreelancerResource($freelancer->load('user', 'realisations.medias', 'notes', 'missions')),
+            'data' => new FreelancerResource($freelancer->load('user', 'competences', 'realisations.medias', 'notes', 'missions')),
         ]);
     }
 
@@ -110,7 +113,7 @@ class FreelancerController extends Controller
      */
     public function show($id)
     {
-        $freelancer = Freelancer::with(['user', 'realisations.medias', 'notes'])
+        $freelancer = Freelancer::with(['user', 'competences', 'realisations.medias', 'notes', 'missions'])
             ->findOrFail($id);
 
         return response()->json([
@@ -329,7 +332,6 @@ class FreelancerController extends Controller
             'data' => RealisationResource::collection($realisations),
         ]);
     }
-
     
     /**
      * Ajouter des médias à une réalisation existante
@@ -446,6 +448,135 @@ class FreelancerController extends Controller
 
         return response()->json([
             'message' => 'Média supprimé avec succès',
+        ]);
+    }
+
+    /**
+     * Ajouter une compétence
+     */
+    public function addCompetence(Request $request)
+    {
+        // Normalement autorisé uniquement pour les admins
+
+        $data = $request->validate([
+            'nom' => 'required|string|unique:competences,nom',
+            'description' => 'sometimes|nullable|string',
+        ]);
+
+        $data['nom'] = ucwords(strtolower(trim($data['nom'])));
+        try {
+            competences::create($data);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['message' => 'Cette compétence existe déjà.'], 409);
+        }
+
+        return response()->json([
+            'message' => 'Compétence ajoutée avec succès',
+            'data' => competences::where('nom', $data['nom'])->first(),
+        ]);
+    }
+
+    /**
+     * Lister toutes les compétences
+     */
+    public function listCompetences()
+    {
+        return response()->json([
+            'data' => competences::all(),
+        ]);
+    }
+
+    /**
+     * Supprimer une compétence
+     */
+    public function removeCompetence($competenceId)
+    {
+        // Normalement autorisé uniquement pour les admins
+
+        competences::findOrFail($competenceId)->delete();
+
+        return response()->json([
+            'message' => 'Compétence supprimée avec succès',
+        ]);
+    }
+
+    /**
+     * Lister les compétences du freelancer connecté
+     */
+    public function listFreelancerCompetence()
+    {
+        $user = Auth::user();
+        $freelancer = $user->freelancer;
+
+        if (!$freelancer) {
+            return response()->json(['message' => 'Profil freelancer non rencontré'], 404);
+        }
+
+        $competences = $freelancer->competences;
+
+        return response()->json([
+            'data' => CompetenceResource::collection($competences),
+        ]);
+    }
+
+    /**
+     * Ajouter une compétence au freelancer connecté
+     */
+    public function addFreelancerCompetence(Request $request)
+    {
+        $user = Auth::user();
+        $freelancer = $user->freelancer;
+
+        if (!$freelancer) {
+            return response()->json(['message' => 'Profil freelancer non rencontré'], 404);
+        }
+
+        $data = $request->validate([
+            // 'competence_id' => 'required|exists:competences,id',
+            'nom' => 'required|string|max:100',
+            'niveau' => 'sometimes|nullable|string|max:100',
+        ]);
+
+        $data['nom'] = ucwords(strtolower(trim($data['nom'])));
+        
+        $competence = competences::firstOrCreate([
+            'nom' => $data['nom'],
+            'description' => $data['description'] ?? '',
+        ]);
+
+        $data = [
+            'freelancer_id' => $freelancer->id,
+            'competence_id' => $competence->id,
+            'niveau' => $data['niveau'] ?? null,
+        ];
+        
+        // $freelancer->competences()->updateOrCreate(
+        FrelancerCompetences::updateOrCreate(
+            ['freelancer_id' => $freelancer->id, 'competence_id' => $competence->id],
+            $data
+        );
+
+        return response()->json([
+            'message' => 'Compétence ajoutée avec succès',
+        ]); 
+    }
+
+    /**
+     * Supprimer une compétence au freelancer connecté
+     */
+    public function removeFreelancerCompetence($competenceId)
+    {
+        $user = Auth::user();
+        $freelancer = $user->freelancer;
+
+        if (!$freelancer) {
+            return response()->json(['message' => 'Profil freelancer non rencontré'], 404);
+        }
+        
+        $freelancer->competences()->detach($competenceId);
+
+        return response()->json([
+            'message' => 'Compétence supprimée avec succès',
         ]);
     }
 }

@@ -28,7 +28,7 @@ class FreelancerResource extends JsonResource
             'pays' => $this->pays,
             'photo_profil' => getLinkToFile($this->photo_profil),
             'photo_couverture' => getLinkToFile($this->photo_couverture),
-            'competences' => $this->competences,
+            'competences' => CompetenceResource::collection($this->whenLoaded('competences')),
             'user' => $this->whenLoaded('user', function() {
                 return [
                     'id' => $this->user->id,

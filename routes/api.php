@@ -131,13 +131,11 @@ Route::prefix('messages')->middleware('auth:api')->group(function () {
 
 // Routes pour les freelancers
 Route::prefix('freelancers')->group(function () {
-    // Routes publiques
-    Route::get('/', [FreelancerController::class, 'index']);
-    Route::get('/{id}', [FreelancerController::class, 'show']);
-    Route::get('/{id}/realisations', [FreelancerController::class, 'realisations']);
-    
     // Routes protégées (freelancer connecté)
     Route::middleware('auth:api')->group(function () {
+        Route::get('/competences', [FreelancerController::class, 'listFreelancerCompetence']);
+        Route::post('/competences', [FreelancerController::class, 'addFreelancerCompetence']);
+        Route::delete('/competences/{id_competence}', [FreelancerController::class, 'removeFreelancerCompetence']);
         Route::get('/me/profile', [FreelancerController::class, 'myProfile']);
         Route::get('/me/realisations', [FreelancerController::class, 'realisations']);
         Route::post('/realisations', [FreelancerController::class, 'storeRealisation']);
@@ -147,6 +145,11 @@ Route::prefix('freelancers')->group(function () {
         Route::post('/realisations/{realisationId}', [FreelancerController::class, 'updateRealisation']);
         Route::delete('/realisations/{realisationId}', [FreelancerController::class, 'destroyRealisation']);
     });
+
+    // Routes publiques
+    Route::get('/', [FreelancerController::class, 'index']);
+    Route::get('/{id}', [FreelancerController::class, 'show']);
+    Route::get('/{id}/realisations', [FreelancerController::class, 'realisations']);
 });
 
 // Routes pour les missions
@@ -509,3 +512,6 @@ Route::middleware('auth:api')->apiResource('mode-paiements', ModePaiementControl
 Route::middleware('auth:api')->apiResource('option-livraisons', OptionLivraisonController::class)->only([
     'index','store','update','destroy'
 ]);
+Route::middleware('auth:api')->get('competences', [FreelancerController::class, 'listCompetences']);
+Route::middleware('auth:api')->post('competences', [FreelancerController::class, 'addCompetence']);
+Route::middleware('auth:api')->delete('competences/{id}', [FreelancerController::class, 'removeCompetence']);
