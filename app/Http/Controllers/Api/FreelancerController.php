@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class FreelancerController extends Controller
 {
@@ -24,7 +25,7 @@ class FreelancerController extends Controller
      */
     public function index(){
         // $freelancers = Freelancer::with(['user', 'realisations.medias', 'notes'])->get();
-        $freelancers = Freelancer::with(['user', 'notes'])->get();
+        $freelancers = Freelancer::with(['user', 'competences', 'notes'])->get();
 
         return response()->json([
             'data' => FreelancerResource::collection($freelancers),
@@ -58,7 +59,6 @@ class FreelancerController extends Controller
             'adresse', 'ville', 'pays',
         ]);
         $competences = $request->input('competences', []);
-        
         
         if (isset($competences) && is_array($competences)) {
             $competences = array_map(function($competence) {
@@ -570,7 +570,6 @@ class FreelancerController extends Controller
     {
         $user = Auth::user();
         $freelancer = $user->freelancer;
-
         if (!$freelancer) {
             return response()->json(['message' => 'Profil freelancer non rencontré'], 404);
         }
@@ -579,9 +578,9 @@ class FreelancerController extends Controller
             'competences' => 'sometimes|nullable|array',
             'competences.*' => 'required|string',
         ]);
+        
+        $competences = $request->input('competences');
 
-        $competences = $request->input('competences', []);
-                
         if (isset($competences) && is_array($competences)) {
             $competences = array_map(function($competence) {
                 $competenceName = ucwords(strtolower(trim($competence)));
@@ -589,9 +588,9 @@ class FreelancerController extends Controller
                 return $competence->id;
             }, $competences);
         }
-        
+
         // Associer les competences
-        $freelancer->competences()->sync($competences);
+        $freelancer->competences()->attach($competences);
 
         return response()->json([
             'message' => 'Compétence ajoutée avec succès',
