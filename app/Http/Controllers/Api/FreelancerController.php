@@ -590,7 +590,7 @@ class FreelancerController extends Controller
         }
 
         // Associer les competences
-        $freelancer->competences()->attach($competences);
+        $freelancer->competences()->syncWithoutDetaching($competences);
 
         return response()->json([
             'message' => 'Compétence ajoutée avec succès',
