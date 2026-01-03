@@ -524,7 +524,7 @@ class FreelancerController extends Controller
     /**
      * Ajouter une compétence au freelancer connecté
      */
-    public function addFreelancerCompetence(Request $request)
+    public function addFreelancerCompetenceOriginal(Request $request)
     {
         $user = Auth::user();
         $freelancer = $user->freelancer;
@@ -557,6 +557,41 @@ class FreelancerController extends Controller
             ['freelancer_id' => $freelancer->id, 'competence_id' => $competence->id],
             $data
         );
+
+        return response()->json([
+            'message' => 'Compétence ajoutée avec succès',
+        ]); 
+    }
+
+    /**
+     * Ajouter une compétence au freelancer connecté
+     */
+    public function addFreelancerCompetence(Request $request)
+    {
+        $user = Auth::user();
+        $freelancer = $user->freelancer;
+
+        if (!$freelancer) {
+            return response()->json(['message' => 'Profil freelancer non rencontré'], 404);
+        }
+        
+        $request->validate([
+            'competences' => 'sometimes|nullable|array',
+            'competences.*' => 'required|string',
+        ]);
+
+        $competences = $request->input('competences', []);
+                
+        if (isset($competences) && is_array($competences)) {
+            $competences = array_map(function($competence) {
+                $competenceName = ucwords(strtolower(trim($competence)));
+                $competence = Competences::firstOrCreate(['nom' => $competenceName]);
+                return $competence->id;
+            }, $competences);
+        }
+        
+        // Associer les competences
+        $freelancer->competences()->sync($competences);
 
         return response()->json([
             'message' => 'Compétence ajoutée avec succès',

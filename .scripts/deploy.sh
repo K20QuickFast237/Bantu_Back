@@ -26,6 +26,9 @@ composer install --no-interaction
 # Run database migrations
 php artisan migrate --force
 
+# Refresh the config cache
+php artisan optimize
+
 # Exit maintenance mode
 php artisan up
 
