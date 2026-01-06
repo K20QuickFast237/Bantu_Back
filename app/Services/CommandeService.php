@@ -21,7 +21,7 @@ class CommandeService
 
             $commande = $acheteur->commandes()
                 ->where('statut', 'en_attente')
-                ->orWhere('statut', 'en_cours')
+                // ->orWhere('statut', 'en_cours')
                 ->first();
                 
             if (!$commande) {
@@ -42,6 +42,10 @@ class CommandeService
             $vendeurIds = [];
 
             foreach ($panierItems as $item) {
+                // s'assurer qu'on ne manipule que les items de la commande en attente
+                if ($item->commandeProduit->commande_id !== $commande->id) {
+                    continue;
+                }
                 $sousTotal += $item->commandeProduit->prix_total;
                 $vendeurIds[] = $item->produit->vendeur_id;
             }
