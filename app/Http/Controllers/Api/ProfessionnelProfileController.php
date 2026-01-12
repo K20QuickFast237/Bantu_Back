@@ -60,11 +60,11 @@ class ProfessionnelProfileController extends Controller
         $data['statut'] = 'actif';
 
         if ($request->hasFile('logo_img')) {
-            $data['logo_img'] = $request->file('logo')->store('logos', 'public');
+            $data['logo_img'] = $request->file('logo_img')->store('logos', 'public');
         }
 
         if ($request->hasFile('couverture_img')) {
-            $data['couverture_img'] = $request->file('photo_couverture')->store('photos_couvertures', 'public');
+            $data['couverture_img'] = $request->file('couverture_img')->store('photos_couvertures', 'public');
         }
 
         try {

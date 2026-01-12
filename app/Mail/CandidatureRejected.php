@@ -19,6 +19,7 @@ class CandidatureRejected extends Mailable
      */
     public function __construct(
         protected Candidature $candidature,
+        protected string $lang = 'en'
     )
     {
         //
@@ -52,6 +53,7 @@ class CandidatureRejected extends Mailable
                 'messageBody' => $this->candidature->message ?? null,
                 'supportEmail' => env('SUPPORT_EMAIL', 'support@bantulink.tech'),
                 // 'actionUrl' => '',
+                'lang' => $this->lang,
             ],
         );
     }

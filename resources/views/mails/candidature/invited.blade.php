@@ -1,8 +1,9 @@
 <!doctype html>
-<html lang="fr">
+{{ app()->setLocale($lang); }}
+<html>
 <head>
     <meta charset="utf-8">
-    <title>Invitation à entretien — {{ $companyName ?? config('app.name') }}</title>
+    <title> {{ __('messages.titre_interview_invitation') }} — {{ $companyName ?? config('app.name') }}</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:#f6f7fb; margin:0; padding:24px; color:#111827; }
@@ -20,46 +21,46 @@
 <body>
     <div class="card" role="article" aria-label="Invitation à entretien">
         <div class="header">
-            <h1>Invitation à Entretien</h1>
+            <h1>{{ __('messages.titre_interview_invitation') }}</h1>
         </div>
 
         <div class="body">
-            <p class="muted">Bonjour {{ $applicantName ? e($applicantName) : 'Madame, Monsieur' }},</p>
+            <p class="muted"> {{ __('messages.bonjour') }} {{ $applicantName ? e($applicantName) : __('messages.civilite') }},</p>
 
-            <p>Nous vous remercions pour votre candidature au poste <strong>{{ $positionTitle ? e($positionTitle) : '—' }}</strong>.<br> Après étude de votre dossier, le recruteur serait ravis d'échanger avec vous lors d'un entretien programmé ainsi qu'il suit:</p>
+            <p>{{ __('messages.merci_candidature') }} <strong>{{ $positionTitle ? e($positionTitle) : '—' }}</strong>.<br> {{ __('messages.apres_etude_dossier') }}</p>
 
             <div class="meta" aria-hidden="false">
-                <div style="margin-bottom:8px;"><span class="kv">Entreprise :</span> {{ $companyName ?? config('app.name') }}</div>
-                <div style="margin-bottom:8px;"><span class="kv">Poste :</span> {{ $positionTitle ?? '—' }}</div>
-                <div style="margin-bottom:8px;"><span class="kv">Date & heure :</span> {{ $interviewDateTime ?? ($interviewDate ?? '—') . ' ' . ($interviewTime ?? '') }}</div>
-                <div style="margin-bottom:8px;"><span class="kv">Mode :</span> {{ $interviewMode ?? 'Présentiel / Visio' }}</div>
-                <div><span class="kv">Lieu / lien :</span> {{ $interviewLocation ?? ($interviewLink ?? '—') }}</div>
+                <div style="margin-bottom:8px;"><span class="kv">{{ __('messages.entreprise') }} :</span> {{ $companyName ?? config('app.name') }}</div>
+                <div style="margin-bottom:8px;"><span class="kv">{{ __('messages.poste') }} :</span> {{ $positionTitle ?? '—' }}</div>
+                <div style="margin-bottom:8px;"><span class="kv">{{ __('messages.date') }} :</span> {{ $interviewDateTime ?? ($interviewDate ?? '—') . ' ' . ($interviewTime ?? '') }}</div>
+                <div style="margin-bottom:8px;"><span class="kv">{{ __('messages.mode') }} :</span> {{ $interviewMode ?? __('messages.mode_options') }}</div>
+                <div><span class="kv">{{ __('messages.lieu') }} :</span> {{ $interviewLocation ?? ($interviewLink ?? '—') }}</div>
             </div>
 
             @if(!empty($instructions))
                 <div style="margin-top:16px;">
-                    <p class="muted">Informations complémentaires :</p>
+                    <p class="muted"> {{ __("messages.informations_complementaires") }} :</p>
                     <div class="meta">{!! nl2br(e($instructions)) !!}</div>
                 </div>
             @endif
 
             @if(!empty($actionUrl))
                 <div style="margin-top:16px;">
-                    <p>Merci de confirmer votre disponibilité en cliquant sur le bouton ci‑dessous. Si l'horaire ne vous convient pas, contactez-nous afin de proposer un créneau alternatif.</p>
+                    <p> {{ __('messages.confirmation_disponibilite') }}.</p>
 
-                        <a class="btn" href="{{ $actionUrl }}">Confirmer ma présence</a>
+                        <a class="btn" href="{{ $actionUrl }}"> {{ __('messages.confirmation_disponibilite_action') }} </a>
                 </div>
             @endif
 
             <p class="muted" style="margin-top:18px;">
                 <!-- Pour toute question, vous pouvez joindre {{ $contactPerson ?? 'notre équipe' }} à <a href="mailto:{{ $supportEmail ?? 'support@' . parse_url(config('app.url'), PHP_URL_HOST) }}">{{ $supportEmail ?? 'support@' . parse_url(config('app.url'), PHP_URL_HOST) }}</a>. -->
-                Pour toute question, vous pouvez joindre directement le recruteur via la messagerie de votre espace candidat.
+                {{ __('messages.contact_support_avis') }}.
             </p>
         </div>
 
         <div class="footer">
             <div><strong>{{ $companyName ?? config('app.name') }}</strong></div>
-            <div>Nous vous remercions pour l'intérêt porté à notre entreprise et restons à votre disposition.</div>
+            <div> {{ __('messages.remerciement_interet') }}.</div>
         </div>
     </div>
 </body>

@@ -19,6 +19,7 @@ class CandidatureSended extends Mailable
      */
     public function __construct(
         protected Candidature $candidature,
+        protected string $lang = 'en'
     )
     {
         //
@@ -30,7 +31,7 @@ class CandidatureSended extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Candidature Sended',
+            subject: 'Candidature Sent',
         );
     }
 
@@ -49,6 +50,7 @@ class CandidatureSended extends Mailable
                 'submittedAt' => $this->candidature->created_at->format('d/m/Y'),
                 'companyName' => env('APP_NAME', 'BantuLink'),
                 // 'actionUrl' => '',
+                'lang' => $this->lang,
             ],
         );
     }

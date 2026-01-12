@@ -263,6 +263,7 @@ Route::middleware('auth:api')->group(function () {
 
 
     Route::middleware('auth:api')->group(function () {
+        Route::get('test_candidature_mail', [CandidatureController::class, 'testCandidatureMail']);
 
         // Candidat : créer une candidature
         Route::post('candidatures', [CandidatureController::class, 'store'])

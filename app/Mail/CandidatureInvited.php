@@ -19,6 +19,7 @@ class CandidatureInvited extends Mailable
     public function __construct(
         protected $candidature,
         protected $infosEntretien,
+        protected string $lang = 'en'
     )
     {
         //
@@ -55,6 +56,7 @@ class CandidatureInvited extends Mailable
                 'interviewMode' => $this->infosEntretien['mode_entretien'],
                 'interviewLocation' => $this->infosEntretien['lieu_entretien'],
                 // 'actionUrl' => '',
+                'lang' => $this->lang,
             ],
         );
     }

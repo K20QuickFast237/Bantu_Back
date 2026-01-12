@@ -323,6 +323,19 @@ class CandidatureController extends Controller
         });
     }
 
+    public function testCandidatureMail(){
+        $user = auth()->user();
+        $candidature = $user->particulier->candidatures->first();
+        $infosEntretien = [
+            'date_entretien' => date('d-m-Y'),
+            'mode_entretien' => 'visio',
+            'lieu_entretien' => 'www.meet.google.com',
+        ];
+        // Mail::to($candidature->particulier->user->email)->send(new CandidatureInvited($candidature, $infosEntretien));
+        Mail::to('cypriendontsa@gmail.com')->send(new CandidatureInvited($candidature, $infosEntretien));
+        return response()->json(['message' => 'Mail sent']);
+    }
+
     private function getCandidatureConversation($candidatId, $recruteurId){
         return Conversation::whereHas('participants', fn($q) => $q->where('users.id', $candidatId))
                 ->whereHas('participants', fn($q) => $q->where('users.id', $recruteurId))

@@ -20,6 +20,7 @@ class CandidatureReceived extends Mailable
      */
     public function __construct(
         protected Candidature $candidature,
+        protected string $lang = 'en'
     )
     {
         //
@@ -50,6 +51,7 @@ class CandidatureReceived extends Mailable
                 'submittedAt' => $this->candidature->created_at->format('d/m/Y'),
                 'companyName' => env('APP_NAME', 'BantuLink'),
                 // 'actionUrl' => '',
+                'lang' => $this->lang,
             ],
         );
     }
