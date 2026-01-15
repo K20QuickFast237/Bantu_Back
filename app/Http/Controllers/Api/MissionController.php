@@ -411,7 +411,7 @@ class MissionController extends Controller
         $transitionsClient = [
             'En Attente' => ['Annulée'],
             'Acceptée' => ['Annulée'],
-            'En Cours' => ['Annulée'],
+            'En Cours' => ['Terminée', 'Annulée'],
             'En Pause' => ['Annulée'],
         ];
 
@@ -421,6 +421,7 @@ class MissionController extends Controller
             'Acceptée' => ['En Cours'],
             'En Cours' => ['Terminée', 'En Pause'],
             'En Pause' => ['En Cours', 'Terminée'],
+            'Terminée' => ['En Cours'],
         ];
 
         $transitionAutorisee = false;
