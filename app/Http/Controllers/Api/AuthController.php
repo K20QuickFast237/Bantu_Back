@@ -31,6 +31,15 @@ class AuthController extends Controller
         // Créer l'utilisateur
         $user = User::query()->create($data);
 
+        // Ajout du rôle acheteur par défaut
+        $acheteurRole = Role::where('name', RoleValues::ACHETEUR)->first();
+        if ($acheteurRole) {
+            $user->roles()->attach($acheteurRole->id, ['isCurrent' => true]);
+        }
+        // Completion du profil acheteur
+        $user->acheteur()->create();
+
+
         // Ajouter le rôle actif dans le pivot si role_actif est fourni
         if (!empty($data['role_actif'])) {
             $role = Role::where('name', $data['role_actif'])->first();
@@ -273,6 +282,13 @@ class AuthController extends Controller
                 'photo_profil' => $userData['picture'],
             ]);
             $user = User::where('email', $user->email)->first();  //->where('linkedin_id', $user['linkedin_id'])
+            // Ajout du rôle acheteur par défaut
+            $acheteurRole = Role::where('name', RoleValues::ACHETEUR)->first();
+            if ($acheteurRole) {
+                $user->roles()->attach($acheteurRole->id, ['isCurrent' => true]);
+            }
+            // Completion du profil acheteur
+            $user->acheteur()->findOrCreateUsercreate();
         }
         return $user;
     }
